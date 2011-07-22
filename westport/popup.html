@@ -1,0 +1,76 @@
+<html>
+    
+    <head>
+        <style>
+        </style>
+        <script>
+            // This callback function is called when the content script has been 
+            // injected and returned its results
+
+            function onPageInfo(o) {
+                document.getElementById("title").value = o.title;
+                document.getElementById("url").value = o.url;
+                document.getElementById("summary").innerText = o.summary;
+            }
+
+            window.onload = function() {
+                var bg = chrome.extension.getBackgroundPage();
+                bg.getPageInfo(onPageInfo);
+            }
+        </script>
+        <script src="http://code.jquery.com/jquery-latest.js">
+        </script>
+        <script>
+            $(document).ready(function() {
+
+
+
+                var remember = '';
+                var timeoutID = window.setTimeout(null, 80);
+
+
+                $("#query").keyup(function() {
+                    window.clearTimeout(timeoutID); //for fast typing
+                    timeoutID = window.setTimeout(run, 800);
+                    //  
+
+                    function run() //query it
+                    {
+                        var q = $("#query").val();
+                        if (q != remember) {
+                            remember = q;
+                            var url = './davis?q=' + q;
+                            $("#result").html("sent.." + q + "<img src='http://acre.freebase.com/api/trans/raw/guid/9202a8c04000641f800000000abf4b47'/ >");
+
+
+                            $.getJSON("http://westport.spencermountain.user.dev.freebaseapps.com/jsonp?q="+q+"&callback=?", function(data) {
+                                $("#result").html(JSON.stringify(data));
+                            });
+                        }
+                    }
+
+                });
+
+            });
+        </script>
+    </head>
+    
+    <body>
+        <input type="text" style="height:60px; position:relative;  font-size:27px; "
+        size='30' value="matt damon" autocomplete="off" length="50" id="query"
+        name="q" />
+        <img src="http://www.freebase.com/api/trans/image_thumb/en/wendy_cobain?errorid=/m/0djw4wd"
+        />
+        <input type="text" id="title" name="title" size="50" value="" />
+        </p>
+        <input type="text" id="url" name="url" size="50" value="" />
+        </p>
+        <span id="result">
+        </span>
+        <iframe src="http://westport.freebaseapps.com" style="width:600px; height:300px">
+        </iframe>
+    </body>
+
+</html>
+0
+

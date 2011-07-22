@@ -1,0 +1,11 @@
+{
+  "name": "Smithers",
+  "description" : "passively listen to music by genre",
+   "version": "1.0",
+  "omnibox": { "keyword" : "smithers" },
+  "browser_action": {
+      "name": "Smithers",      
+        "default_icon": "icon.png",
+      "popup":"popup.html"
+  }
+}

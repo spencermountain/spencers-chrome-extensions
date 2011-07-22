@@ -1,0 +1,54 @@
+<script src="http://code.jquery.com/jquery-latest.js">
+</script>
+<script>
+    $(document).ready(function() {
+
+
+        // This event is fired each time the user updates the text in the omnibox,
+        // as long as the extension's keyword mode is still active.
+        chrome.omnibox.onInputChanged.addListener(
+
+        function(text, suggest) {
+            if (text) {
+                resetDefaultSuggestion(text);
+            }
+            var sugg = [];
+            var url = "http://westport.freebaseapps.com/wikipedia?q=" + text + "&callback=?";
+
+            $.getJSON(url, function(data) {
+                for (var i in data) {
+                    var desc = data[i].name.replace(/_/g, ' ') + '  - <dim>' + data[i].text + '</dim>';
+                    sugg.push({
+                        content: data[i].name,
+                        description: desc
+                    });
+                }
+                sugg.push({content :text,
+                    description: 'search in wikipedia'
+                  });
+                suggest(sugg);
+            });
+
+        });
+
+        function resetDefaultSuggestion(text) {
+            chrome.omnibox.setDefaultSuggestion({
+                description: 'search <dim>' + text + '</dim> in wikipedia'
+            });
+        }
+
+        // This event is fired with the user accepts the input in the omnibox.
+        chrome.omnibox.onInputEntered.addListener(
+
+        function(text) {
+            text = text.replace(/ /g, '_');
+            var url = "http://en.wikipedia.org/wiki/" + text;
+            return chrome.tabs.create({
+                url: url
+            });
+
+        });
+
+    });
+</script>
+

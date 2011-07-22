@@ -1,0 +1,18 @@
+
+        <script>
+            // This callback function is called when the content script has been 
+            // injected and returned its results
+
+            function onPageInfo(o) {
+               // document.getElementById("title").value = o.title;
+                //document.getElementById("url").value = o.url;
+            }
+
+            window.onload = function() {
+                var bg = chrome.extension.getBackgroundPage();
+                bg.getPageInfo(onPageInfo);
+                window.close();
+                
+            }
+        </script>
+
