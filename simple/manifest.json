@@ -1,0 +1,16 @@
+{
+    "name": "Simple english",
+    "description": "make the english on the page easier to read",
+    "version": "1.1",
+    "background_page": "background.html",
+    "permissions": [
+        "tabs", 
+        "http://*/*", 
+        "https://*/*"
+    ],    
+    "browser_action": {
+        "default_title": "Simple",
+        "default_icon": "icon.png",
+        "popup": "popup.html"
+    }
+}

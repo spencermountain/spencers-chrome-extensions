@@ -1,0 +1,7 @@
+{
+  "name": "learn",
+  "version": "0.1",
+  "chrome_url_overrides": {
+    "newtab": "learn.html"
+  }
+}

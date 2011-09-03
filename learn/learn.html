@@ -1,0 +1,193 @@
+<html>
+<head>
+	<title>home</title>
+	<script type="text/javascript" src="jquery.js"></script> 
+	<script src="mustache.js" type="text/javascript"></script>   
+
+	   <script>
+       $(document).ready(function(){//freebase search logic 
+       var timeoutID = window.setTimeout(null, 800);
+       
+           var el=$("#query");
+             $(el).focus();
+             el.keyup(function () {
+              window.clearTimeout(timeoutID);//for fast typing
+              timeoutID = window.setTimeout(function(){
+                            
+              var text = $(el).val(); 
+              console.log(text)
+              var url="http://westport.freebaseapps.com/newjsonp?callback=?&q="+text;
+                 $.getJSON(url, function(data) {
+                    var html='';
+                    for(var i in data.response){
+                    html+='<tr><td><a href="#" class="addlearn">'+data.response[i].name+'</a>'
+                    +'<input class="id" value="'+data.response[i].id+'"/ >'
+                    +'</td><img src="http://www.freebase.com/api/trans/image_thumb'+data.response[i].id+'?errorid=/m/0djw4wd&maxwidth=200&maxheight=200" / ></tr>';
+                    }
+                   $("#result").html('<table>'+html+'</table>');
+                   
+                   
+                   $(".addlearn").click(function(){
+                       var id=$(this).siblings(".id").val();
+                       var name=$(this).html()
+                       $("#id").val(id);  
+                       $("#name").val(name);  
+                   });
+                   
+                 });
+           
+              }, 800);
+          });
+       });
+       
+       
+       
+              
+       //templating
+           var template_data = { 
+        	  	};
+       
+       
+       
+       //localstorage i/o
+        function loadthings() {
+	        var data = localStorage["learn"]||'[]';
+	        data=JSON.parse(data);
+	        console.log(data);	
+	
+          template_data.freebase=data;
+
+          $(function () {
+              $('#template').mustache(template_data).appendTo('#showlist');
+
+               var timeoutID2 = window.setTimeout(      
+                    function(){
+                              $('div.description').each(function(){
+                                  $(this).css('opacity', 0.7);
+                                  //..set width same as the image...
+                                  
+                                  var imgwidth=$(this).siblings('img').width();
+                                  if(imgwidth<50){imgwidth=100;}
+                                  console.log(imgwidth);
+                                  $(this).css('width', imgwidth);
+                                  $(this).parent(".description").css('width', imgwidth);
+                                  $(this).parents(".wrapper").css('width', imgwidth);
+                                  $(this).css('display', 'block');
+                                });
+                          
+                            $('.wrapper').hover(function(){  
+                                 $(this).children('.description').stop().fadeTo(150, 0.9);  
+                             },function(){   
+                                 $(this).children('.description').stop().fadeTo(150, 0.7);  
+                             });            
+                         },400);
+            
+                });
+      }
+        function savethings() {
+	        var old = localStorage["learn"] || '[]';
+	        old=JSON.parse(old)
+	        var id = document.getElementById("id").value;
+	        var name = document.getElementById("name").value;
+	        old.unshift({"name":name, "id":id});
+	        localStorage["learn"] = JSON.stringify(old);	
+	        location.reload();
+        }
+
+        function erasethings() {
+	        localStorage.removeItem("learn");	
+	        localStorage["learn"] = JSON.stringify([]);
+	        location.reload();
+        }
+       
+
+
+
+            $('div.description').each(function(){
+              $(this).css('opacity', 0.7);
+              //..set width same as the image...
+              
+              var imgwidth=$(this).siblings('img').width();
+              if(imgwidth<50){imgwidth=100;}
+              console.log(imgwidth);
+              $(this).css('width', imgwidth);
+              $(this).parent(".description").css('width', imgwidth);
+              $(this).parents(".wrapper").css('width', imgwidth);
+              $(this).css('display', 'block');
+            });
+            
+              $('.wrapper').hover(function(){  
+                   $(this).children('.description').stop().fadeTo(150, 0.9);  
+               },function(){   
+                   $(this).children('.description').stop().fadeTo(150, 0.7);  
+               }); 
+
+
+
+// jQuery Mustache Plug-In 
+(function ($) {
+    $.fn.mustache = function (data, partial, stream) {
+    	if (Mustache && data) {
+    	    return $(Mustache.to_html(this.text(), data, partial, stream));
+        }
+    };
+})(jQuery);
+       </script>
+       
+           <script id="template" type="x-tmpl-mustache">
+            {{#freebase}}                  
+                <span class='wrapper'>
+                  <a href="http://freebase.com/view{{id}}">
+                  <img src='http://freebase.com/api/trans/image_thumb{{id}}?maxwidth=200&maxheight=200&errorid=/m/0djw4wd' / >
+                  <div class='description'>
+                    <div class='description_content'>{{name}}</div>
+                  </div> 
+                </a>     
+               </span>     
+            {{/freebase}}
+          {{description}}
+           </script>
+      <style>
+      
+          span.wrapper{
+          position:relative; /* important(so we can absolutely position the description div */
+              width:100px;
+              display:inline-block;
+              margin:5px;
+        }
+        div.description{
+          position:absolute; /* absolute position (so we can position it where we want)*/
+          bottom:0px; /* position will be on bottom */
+          left:0px;
+          display:none; /* hide it */
+          /* styling bellow */
+          background-color:black;
+          font-family: 'tahoma';
+          font-size:15px;
+          color:white;
+              width:100px;
+        }
+        div.description_content{
+          padding:10px;
+        }
+  </style>
+</head>
+<body onload="loadthings()">
+
+<div id="total"></div>
+
+<form action="#">
+	<input id="query" value=""/>
+   <div id="result"></div>
+
+	<input id="name" type="hidden" value=""/>
+	<input id="id" type="hidden" value=""/>
+	<input type="submit" onclick="savethings()" value="learn"/>
+	</form>
+	<div id="showlist">
+	
+	</div>	
+	<br />
+	<button onclick="erasethings()">i know this all</button>
+</body>
+</html>
