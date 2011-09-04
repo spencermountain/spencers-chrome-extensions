@@ -1,0 +1,36 @@
+<html>
+    
+    <head>
+        <script>
+
+            window.onload = function() {
+
+             chrome.tabs.getSelected(null, function(tab) { 
+             
+             document.body.innerHTML='<ul>'
+             +'<a href="#" onClick="goto(\'http://george.freebaseapps.com/boyfriend?url='+tab.url+'\') ">create this</a><br/ >'
+             +'<a href="#" onClick="goto(\'http://george.freebaseapps.com\') ">garden</a>'
+             +'</ul>'
+             +document.body.innerHTML;
+             
+             });
+            }
+            
+            
+             function goto(url){
+              chrome.tabs.getSelected(null, function(tab) {             
+                  chrome.tabs.update(tab.id, {url:url} );
+                  window.close();
+             });
+             }
+            
+        </script>
+
+    </head>
+    <body style="width:400px; height:300px;">
+    
+    <a href="#" onClick="goto('http://george.freebaseapps.com') ">boo</a>
+    </body>
+
+</html>
+
