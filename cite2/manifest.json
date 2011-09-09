@@ -1,5 +1,5 @@
 {
-    "name": "Freebase garden",
+    "name": "cite2",
     "description": "edit freebase really quickly",
     "version": "0.1",  
     "browser_action": {
@@ -8,9 +8,7 @@
         "popup": "popup.html"
     },
     "icons": {
-    "128": "freebase128.jpg",
-    "16": "freebase16.jpg",
-    "48": "freebase48.jpg"
+    "16": "flowers.png"
   },
   "background_page": "background.html",
   "permissions": [

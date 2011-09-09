@@ -14,11 +14,13 @@
        $(document).ready(function(){
        
        
-       //get selection
-var BP=chrome.extension.getBackgroundPage();
-BP.getSelectedText(function(a){
-alert(a);
-});
+       
+  chrome.tabs.getSelected(null, function(tab) {
+    chrome.tabs.sendRequest(tab.id, {method: "getSelection"}, function (response) {
+      var text = document.getElementById('text'); 
+      text.innerHTML = response.data;
+    });
+  });
        
        
               var url= 'http://thekeep.freebaseapps.com/today';
@@ -77,7 +79,7 @@ alert(a);
        
        
              
-             if(html==''){ html=unknown_page();}
+             if(html==''){ html=unknown_page(tab.url);}
              document.body.innerHTML='<p></p>'+html+document.body.innerHTML; //prepend given html
 
 
@@ -139,9 +141,8 @@ alert(a);
     <p></p>
     <img src="flowers.png"/ > <a href="#" style="font-size:22px;" onClick="goto(\'http://george.freebaseapps.com\') ">freely garden</a>
 
-   <div id="output"> 
-      This should be replaced with the selected text 
-    </div> 
+
+<textarea id="text"> </textarea>
 
     </body>
 

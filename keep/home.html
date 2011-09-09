@@ -1,0 +1,322 @@
+<html>
+<head>
+	<title>home</title>
+	<script type="text/javascript" src="jquery.js"></script> 
+	<script src="mustache.js" type="text/javascript"></script>   
+	<script src="parseuri.js" type="text/javascript"></script>   
+
+    <link type="text/css" rel="stylesheet" href="cool.css" /> 
+	   <script>
+	     
+	     
+	     
+	          //make a url into a saved topic
+       function keep(url, title){
+           var url="http://thekeep.freebaseapps.com/uri_recon?callback=?&url="+url;     //send url to freebase	    
+           $.getJSON(url, function(data) {
+              alert(JSON.stringify(data));
+              addnew(data);                       
+           });
+       }
+       
+	  function renderthings(){	   
+               var timeoutID2 = window.setTimeout(      
+                    function(){
+                              $('div.description').each(function(){
+                                  $(this).css('opacity', 0.7);
+                                  //..set width same as the image...
+                                  
+                                  var imgwidth=$(this).siblings('img').width();
+                                  if(imgwidth<50){imgwidth=100;}
+                                  $(this).css('width', imgwidth);
+                                  $(this).parent(".description").css('width', imgwidth);
+                                  $(this).parents(".wrapper").css('width', imgwidth);
+                                  $(this).css('display', 'block');
+                                });
+                          
+                            $('.wrapper').hover(function(){  
+                                 $(this).children('.description').stop().fadeTo(150, 0.9);  
+                             },function(){   
+                                 $(this).children('.description').stop().fadeTo(150, 0.7);  
+                             });            
+                         },100);
+	   }
+	   
+	   
+       $(document).ready(function(){
+       
+       
+       
+       //history
+          d = new Date();
+          today=d.getTime();
+          day=d.getDate();
+          yesterday=d.setDate(day-1);
+          chrome.history.search({text:'', startTime:yesterday, endTime:today}, function(tabs){
+          var tablist={};
+            for(var i in tabs){
+               if(tabs[i].url.match(/^chrome/)){continue;}
+               var title=parsetitle(tabs[i].title);
+            	 var parsed=parseUri(tabs[i].url);
+	             var favicon=null;
+	             if(parsed.host){
+	               favicon='chrome://favicon/http://'+parsed.host;
+	             }
+	             domain=parsed.host.replace(/^www\./,'');
+	             domain=domain.replace(/\.(org|net|com|co\.uk)/,'')
+	             if(!title){title=domain;}
+	             if(tablist[parsed.host] == null){tablist[parsed.host]={favicon:favicon, sites:[], domain:domain };}	             
+	             tablist[parsed.host].sites.push({ url : tabs[i].url, title : title})	      
+            }   
+            //pivot into an array
+            var tabarr=[];
+            for(var i in tablist){
+              tablist[i].font=tablist[i].sites.length+15;
+              tabarr.push(tablist[i]);          
+            }
+            tabarr.sort(function(a,b){return b.font-a.font;});
+            
+            $('#historylist').html('');
+            $('#historytemplate').mustache({tabs:tabarr}).appendTo('#historylist');
+                   
+                   $(".domain").click(function(){
+                       $(this).siblings(".sites").css('display','inline');
+                   });
+          });
+       
+       function parsetitle(title){
+         var parts=title.split(/\W[\||\-]\W/)
+         return parts[0];
+       }
+       
+       
+	   //get open tabs
+	   
+	   //first, current tab
+	   chrome.tabs.getCurrent(function(tab){
+	     var this_tab=tab.id;
+	   
+	     chrome.windows.getAll({ populate: true }, function(windowlist) {
+	     //remove current tab
+	     var tabs=[];
+	     for(var i in windowlist){
+	       for(var o in windowlist[i].tabs){
+	         var title=windowlist[i].tabs[o].title;
+	         var url=windowlist[i].tabs[o].url;
+	         if(!title.match(/gmail|hotmail/i)){	           
+	           if(1||!url.match(/^chrome/)){	           
+	           
+	             //close other hometabs
+	             if(windowlist[i].tabs[o].id != this_tab && url== 'chrome://newtab/'){
+	               closetab(windowlist[i].tabs[o].id);
+	             }	           
+	           
+	             if (title.length >100){
+	               title=title.substr(0, 100);
+	             }
+	             var parsed=parseUri(url);
+	             var favicon=null;
+	             if(parsed.host){
+	               favicon='chrome://favicon/http://'+parsed.host;
+	             }
+	         
+	             tabs.push({ url:url, title:title, favicon:favicon, id:windowlist[i].tabs[o].id})	           
+	            }
+	         }
+	         }
+	     }
+       $('#tabstemplate').mustache({tabs:tabs}).appendTo('#tablist');	     
+	     
+	     });
+	    }); 
+	     
+	     
+	   });
+	   
+	   
+	   
+	   function closetab(tabId) {
+        try {
+          chrome.tabs.remove(tabId, function() {});
+        } catch (e) {
+          alert(e);
+        }
+	        location.reload();
+      }
+	   
+	   
+	   
+	   
+	   
+       var found={};
+       $(document).ready(function(){//freebase search logic 
+       var timeoutID = window.setTimeout(null, 800);
+           var el=$("#query");
+             $(el).focus();
+             el.keyup(function () {
+             var found={};
+              window.clearTimeout(timeoutID);//for fast typing
+              timeoutID = window.setTimeout(function(){
+                            
+              var text = $(el).val(); 
+              var url="http://keep.spencermountain.user.dev.freebaseapps.com/namesearch?callback=?&q="+text;
+                 $.getJSON(url, function(data) {
+                    var html='<tr><a href="#" class="addlearn"><td>'+data.name
+                    +'</td><img src="http://www.freebase.com/api/trans/image_thumb'+data.id
+                    +'?errorid=/m/0djw4wd&maxwidth=200&maxheight=200" / ></a></tr>';
+                    
+                   $("#result").html('<table>'+html+'</table>');                   
+                   found=data;
+                   $(".addlearn").click(function(){
+                       addnew(found);
+                   });
+                   
+                 });
+           
+              }, 800);
+          });
+       });
+       
+       
+           
+       //localstorage i/o
+        function loadthings() {
+	        var data = localStorage["learn"]||'[]';
+	        data=JSON.parse(data);	
+              $('#keeptemplate').mustache({things:data}).appendTo('#showlist');
+              renderthings();            
+         }
+      
+        function addnew(obj) { 
+	        var old = localStorage["learn"] || '[]';
+	        old=JSON.parse(old)
+	        old.unshift(obj);
+	        localStorage["learn"] = JSON.stringify(old);	
+	        renderthings();
+	        //location.reload();
+        }
+
+
+        function erasethings() {
+	        localStorage.removeItem("learn");	
+	        localStorage["learn"] = JSON.stringify([]);
+	        location.reload();
+        }
+       
+
+function open(el){
+$(el).siblings(".sites").css('display','inline');
+}
+
+            $('div.description').each(function(){
+              $(this).css('opacity', 0.7);
+              //..set width same as the image...
+              
+              var imgwidth=$(this).siblings('img').width();
+              if(imgwidth<50){imgwidth=100;}
+              $(this).css('width', imgwidth);
+              $(this).parent(".description").css('width', imgwidth);
+              $(this).parents(".wrapper").css('width', imgwidth);
+              $(this).css('display', 'block');
+            });
+            
+              $('.wrapper').hover(function(){  
+                   $(this).children('.description').stop().fadeTo(150, 0.9);  
+               },function(){   
+                   $(this).children('.description').stop().fadeTo(150, 0.7);  
+               }); 
+
+
+
+      // jQuery Mustache Plug-In 
+      (function ($) {
+          $.fn.mustache = function (data, partial, stream) {
+          	if (Mustache && data) {
+          	    return $(Mustache.to_html(this.text(), data, partial, stream));
+              }
+          };
+      })(jQuery);
+       </script>
+       
+           <script id="keeptemplate" type="x-tmpl-mustache">
+              {{#things}}                  
+                  <span class='wrapper'>
+                    <a href="http://freebase.com/view{{id}}">
+                      <img src='http://freebase.com/api/trans/image_thumb{{id}}?maxwidth=200&maxheight=200&errorid=/m/0djw4wd' / >
+                      <div class='description'>
+                        <div class='description_content'>{{name}}</div>
+                      </div> 
+                    </a>     
+                 </span>     
+              {{/things}}
+           </script>
+           
+          <script id="tabstemplate" type="x-tmpl-mustache">
+           <ul>
+            <table>
+              {{#tabs}}
+                <tr>
+                  <td>
+                    <a href="{{url}}">
+                      <img style="width:15px; height:15px;" src="{{favicon}}" / >
+                      {{title}}
+                    </a> 
+                  </td>
+                  <td>
+                    <a href="#" onClick="closetab( {{id}} );">close</a>            
+                  </td>
+                  <td>
+                    <a href="#" onClick='keep("{{url}}", "{{title}}")'>keep</a>            
+                  </td>
+                </tr>   
+              {{/tabs}}
+              </table>
+            </ul>
+           </script>
+           
+          <script id="historytemplate" type="x-tmpl-mustache">
+              {{#tabs}}
+                      <img style="width:15px; height:15px;" src="{{favicon}}" / >
+                       <a href="#" class="domain" style="font-size:{{font}}">{{domain}}</a>  
+                      <br/ >
+                      <ul class="sites" style="display:none;">
+                        <table>
+                          {{#sites}}
+                            <tr>
+                              <td>
+                               <a href="{{url}}">{{title}}</a>
+                              </td>
+                              <td>
+                                <a href="#" onClick='keep("{{url}}", "{{title}}")'>keep</a>
+                              </td>
+                            </tr>
+                          {{/sites}}
+                        </table>
+                      </ul>
+              {{/tabs}}
+           </script>
+</head>
+<body onload="loadthings()">
+
+<div id="total"></div>
+
+	<div id="showlist">	
+	</div>	
+	<br />
+	<button onclick="erasethings()">yeah, i know</button>	
+	<br />	
+	
+	  <form action="#" onsubmit="addnew(found)">
+	    <input id="query" value=""/>
+      <div id="result"></div>
+	  </form>
+	  
+	  
+          <h3>tabs:</h3>
+          <div id="tablist"></div>
+	
+	        <h3>history:</h3>
+          <div id="historylist"></div>
+	
+</body>
+</html>

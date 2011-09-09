@@ -1,0 +1,102 @@
+<html>
+    
+    <head>
+    <style>
+ body{padding:0;margin:0;text-align:center;color:#666;font-weight:normal;font-family:"Helvetica","Univers","Helvetica Neue",arial,helvetica,sans-serif; text-align:justify;font-size:18px;line-height:1.5em;padding-bottom:24px;letter-spacing:0.3pt;color:#808080;}
+ a{color:#80b0ff;}
+ </style> 
+ 
+	<script type="text/javascript" src="jquery.js"></script> 
+        <script>
+        
+       $(document).ready(function(){
+       
+       
+             chrome.tabs.getSelected(null, function(tab) {
+             
+             
+                              // Object to hold information about the current page
+                              var cite = {
+                                  "title": tab.title,
+                                  "url": tab.url
+                              };
+
+                              //acessdate
+                              var time=new Date();
+                              var month=time.getMonth()+1; month=''+month+'';
+                              if(month.length==1){month='0'+month;}
+                              var day=''+time.getDate()+'';
+                              if(day.length==1){day='0'+day;}
+                              var year=time.getFullYear();
+                              cite.accessdate= year+'-'+month+'-'+day;
+                           
+                           
+             
+             
+                   //get selected quote
+                  chrome.tabs.sendRequest(tab.id, {method: "getSelection"}, function (response) {
+                    
+    
+                    
+                    cite.quotation=response.data
+                   
+                       //get publisher
+                       var url= 'http://referee.freebaseapps.com/jsonapi?callback=?&url='+tab.url;
+                       $.getJSON(url, function(data) {
+                           var html='';
+                           if(data){
+                             data=data.replace('\n','');//known bug
+                           }
+                           cite.publisher=data;
+                           
+                           
+                           
+
+                           
+                          var text = document.getElementById('text'); 
+                          text.innerHTML = JSON.stringify(cite,null,2);
+                           
+                           
+                        });   
+             
+                       
+                  });
+                  
+                  
+                    //get pages that cite this
+                       var url='http://referee.spencermountain.user.dev.freebaseapps.com/smartcite?callback=?&url='+tab.url;
+                         $.getJSON(url, function(data) {
+                           var html='<h3>pages that cite this already</h3>';
+                           console.log(data);
+                           for(var i in data){
+                             var name=data[i].name.replace(' ','_');
+                             html+='<a href="http://en.wikipedia.org/wiki/'+name+'">'+name+'</a></br>';
+                           }
+                           $("#smartcite").html(html)
+                           
+                        });  
+                  
+               });
+               
+               
+               
+              
+              
+      });
+                
+
+            
+        </script>
+
+    </head>
+    <body style="width:400px; height:300px;">
+    
+
+
+    <textarea id="text" style="width:300px; height:300px;"> </textarea>
+
+<div id="smartcite"></div>
+    </body>
+
+</html>
+

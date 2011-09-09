@@ -31,11 +31,11 @@
 
 $(document).ready(function() {
 
-// This event is fired with the user accepts the input in the omnibox.
-chrome.omnibox.onInputEntered.addListener(
-  function(text) {
-    chrome.tabs.executeScript(null, { file: "content_script.js" }); 
-  });
+  // This event is fired with the user accepts the input in the omnibox.
+  chrome.omnibox.onInputEntered.addListener(
+    function(text) {
+      chrome.tabs.executeScript(null, { file: "content_script.js" }); 
+    });
 
   }); 
 </script>
