@@ -30,7 +30,9 @@
                               var year=time.getFullYear();
                               cite.accessdate= year+'-'+month+'-'+day;
                            
-                           
+                  chrome.tabs.sendRequest(tab.id, {method: "getSelector"}, function (response) {
+                    console.log(JSON.stringify(response))
+                  })         
              
              
                    //get selected quote
@@ -43,6 +45,7 @@
                        //get publisher
                        var url= 'http://referee.freebaseapps.com/jsonapi?callback=?&url='+tab.url;
                        $.getJSON(url, function(data) {
+                       console.log('return referee')
                            var html='';
                            if(data){
                              data=data.replace('\n','');//known bug
@@ -67,6 +70,7 @@
                        var url='http://referee.spencermountain.user.dev.freebaseapps.com/smartcite?callback=?&url='+tab.url;
                          $.getJSON(url, function(data) {
                            var html='<h3>pages that cite this already</h3>';
+                           console.log('return pages')
                            console.log(data);
                            for(var i in data){
                              var name=data[i].name.replace(' ','_');

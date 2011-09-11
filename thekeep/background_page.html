@@ -1,0 +1,26 @@
+
+<script type="text/javascript" src="encode.js"></script> 
+<script>
+
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+
+//add this wikipedia page to the home page
+    if (request.method == "addwikipedia" && request.url.match('wikipedia.org/wiki/')){
+        var title=request.url.replace('http://en.wikipedia.org/wiki/','')
+        var id='/wikipedia/en/'+mqlkey_quote(title);
+        var obj={name:title, url:request.url, "/common/topic/weblink": request.url, id:id}
+        var old = localStorage["learn"] || '[]';
+        old=JSON.parse(old)
+        old.unshift(obj);
+        localStorage["learn"] = JSON.stringify(old);	       
+    
+        sendResponse({page: title});
+      }
+    else
+      {sendResponse({}); // snub them.
+      }
+});
+
+
+</script>

@@ -14,5 +14,6 @@
         "spotwiki.js"
       ]
     }
-  ]
+  ],
+  "background_page":"background_page.html"
 }

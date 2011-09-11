@@ -27,7 +27,7 @@
                                   //..set width same as the image...
                                   
                                   var imgwidth=$(this).siblings('img').width();
-                                  if(imgwidth<50){imgwidth=100;}
+                                  if(imgwidth<50){imgwidth=150;}
                                   $(this).css('width', imgwidth);
                                   $(this).parent(".description").css('width', imgwidth);
                                   $(this).parents(".wrapper").css('width', imgwidth);
@@ -56,7 +56,7 @@
           var tablist={};
             for(var i in tabs){
                if(tabs[i].url.match(/^chrome/)){continue;}
-               var title=parsetitle(tabs[i].title);
+               var title=parsetitle(tabs[i].title, tabs[i].url);
             	 var parsed=parseUri(tabs[i].url);
 	             var favicon=null;
 	             if(parsed.host){
@@ -74,60 +74,118 @@
               tablist[i].font=tablist[i].sites.length+15;
               tabarr.push(tablist[i]);          
             }
-            tabarr.sort(function(a,b){return b.font-a.font;});
+          //  tabarr.sort(function(a,b){return b.font-a.font;});
             
             $('#historylist').html('');
             $('#historytemplate').mustache({tabs:tabarr}).appendTo('#historylist');
                    
                    $(".domain").click(function(){
-                       $(this).siblings(".sites").css('display','inline');
+                        $(this).siblings(".sites").toggle();
                    });
           });
        
-       function parsetitle(title){
-         var parts=title.split(/\W[\||\-]\W/)
-         return parts[0];
+       //get a better title from the title tag
+       function parsetitle(title, url){
+         
+         //remove junk home page titles with domains
+         var parsed=parseUri(url);
+         if(parsed.directory == '/'){
+           return title=parsed.host;
+         }
+         
+         var parts=title.split(/\W[\||\-]\W/);
+         if(!parts || parts.length<2){return title;}
+         
+         if(parts[0].length < parts[parts.length-1].length){
+           title=parts[parts.length-1]
+         }else{
+           title=parts[0];
+         }
+         if (title.length > 40){
+                   var tokens=title.split(' ');
+	                  for(var i in tokens){
+	                    title+=' '+tokens[i];
+	                    if(title.length>40){ 
+	                      title+='...';
+	                      break
+	                      }
+	                  }
+	               }
+         return $.trim(title);
        }
+
+
+
+
        
        
 	   //get open tabs
-	   
-	   //first, current tab
-	   chrome.tabs.getCurrent(function(tab){
-	     var this_tab=tab.id;
-	   
-	     chrome.windows.getAll({ populate: true }, function(windowlist) {
-	     //remove current tab
-	     var tabs=[];
-	     for(var i in windowlist){
-	       for(var o in windowlist[i].tabs){
-	         var title=windowlist[i].tabs[o].title;
-	         var url=windowlist[i].tabs[o].url;
-	         if(!title.match(/gmail|hotmail/i)){	           
-	           if(1||!url.match(/^chrome/)){	           
+	       chrome.windows.getAll({ populate: true }, function(windowlist) {
+	       
+	       //remove current tab
+	       var tabs=[];
+	       var duplicates=0;
+	       var already=[];
+	       var domains=[];
+	       var multi=[];
 	           
-	             //close other hometabs
-	             if(windowlist[i].tabs[o].id != this_tab && url== 'chrome://newtab/'){
-	               closetab(windowlist[i].tabs[o].id);
-	             }	           
+	       for(var i in windowlist){
+	         for(var o in windowlist[i].tabs){
+	         	         
+	           var title=windowlist[i].tabs[o].title;
+	           var url=windowlist[i].tabs[o].url;
 	           
-	             if (title.length >100){
-	               title=title.substr(0, 100);
+               //close other hometabs
+               if( windowlist[i].tabs[o].selected == 'false' && url== 'chrome://newtab/'){
+                 closetab(windowlist[i].tabs[o].id);
+               }	
+                   	           
+	           if(url.match(/^https?:\/\//)){	 
+                
+                //make title nicer           
+	               title=parsetitle(title, url);
+	                            	           
+	             //find duplicates
+	               for(var a in already){
+	                 if(already[a]==url){
+	                   duplicates++;
+	                 }
+	               }
+    	           already.push(url);
+    	           
+  	            //favicon
+	               var parsed=parseUri(url);
+	               var favicon='chrome://favicon/http://'+parsed.host;	               
+	           
+	           
+	               //find repeated domains	           
+  	             parsed.host=parsed.host.replace(/^www\./,'');
+  	             for(var d in domains){
+	                 if(domains[d]==parsed.host){
+	                   multi.push(domains[d]);
+	                 }
+	               }	               
+	               domains.push(parsed.host);
+	           
+	           
+	           
+	               tabs.push({ url:url, title:title, favicon:favicon, id:windowlist[i].tabs[o].id});
+	              
 	             }
-	             var parsed=parseUri(url);
-	             var favicon=null;
-	             if(parsed.host){
-	               favicon='chrome://favicon/http://'+parsed.host;
-	             }
-	         
-	             tabs.push({ url:url, title:title, favicon:favicon, id:windowlist[i].tabs[o].id})	           
-	            }
-	         }
-	         }
-	     }
-       $('#tabstemplate').mustache({tabs:tabs}).appendTo('#tablist');	     
+	           }
+	       }
+	       
+	       
+	       multi=unique(multi);
+	       
+	       //mustache needs a boolean
+	       var hasduplicates=false;
+	       if(duplicates>0){hasduplicates=true}
+	       var hasmulti=false;
+	       if(multi.length>0){hasmulti=true;}
+	       
+         $('#tabstemplate').mustache({tabs:tabs, duplicates:duplicates, hasduplicates:hasduplicates, multi:multi, hasmulti:hasmulti}).appendTo('#tablist');	     
 	     
-	     });
 	    }); 
 	     
 	     
@@ -146,7 +204,18 @@
 	   
 	   
 	   
-	   
+	    //remove duplicates from array
+ function unique(x) {
+   var newArray=new Array();
+    label:for(var i=0; i<x.length;i++ ){
+      for(var j=0; j<newArray.length;j++ ){ 
+          if(newArray[j]==x[i]) 
+          continue label;
+        }
+        newArray[newArray.length] = x[i];
+      }
+    return newArray;
+  }
 	   
        var found={};
        $(document).ready(function(){//freebase search logic 
@@ -178,13 +247,17 @@
        });
        
        
+       
+       function toggle(sel){
+          $(sel).toggle()
+       }
            
        //localstorage i/o
         function loadthings() {
 	        var data = localStorage["learn"]||'[]';
 	        data=JSON.parse(data);	
               $('#keeptemplate').mustache({things:data}).appendTo('#showlist');
-              renderthings();            
+              renderthings();     
          }
       
         function addnew(obj) { 
@@ -193,7 +266,7 @@
 	        old.unshift(obj);
 	        localStorage["learn"] = JSON.stringify(old);	
 	        renderthings();
-	        //location.reload();
+	        location.reload();
         }
 
 
@@ -203,10 +276,6 @@
 	        location.reload();
         }
        
-
-function open(el){
-$(el).siblings(".sites").css('display','inline');
-}
 
             $('div.description').each(function(){
               $(this).css('opacity', 0.7);
@@ -228,6 +297,44 @@ $(el).siblings(".sites").css('display','inline');
 
 
 
+  //close duplicate tabs
+  function closeduplicates(){
+	   chrome.windows.getAll({ populate: true }, function(windowlist) {
+	         var already=[];	           
+	         for(var i in windowlist){
+	           for(var o in windowlist[i].tabs){	         
+	             var url=windowlist[i].tabs[o].url;	        
+	                 for(var a in already){
+	                   if(already[a]==url){
+	                     chrome.tabs.remove(windowlist[i].tabs[o].id, function() {});
+	                   }
+	                 }
+	                 already.push(url);
+	               }
+	            }
+	          location.reload();
+       });
+    }
+
+  //bulk close by domain
+  function closebulk(domain){
+     console.log('closing all '+domain)
+	   chrome.windows.getAll({ populate: true }, function(windowlist) {
+	         for(var i in windowlist){
+	           for(var o in windowlist[i].tabs){	
+            	 var parsed=parseUri(windowlist[i].tabs[o].url);
+	             parsed.host=parsed.host.replace(/^www\./,'');
+	                   if(parsed.host==domain){
+	                     chrome.tabs.remove(windowlist[i].tabs[o].id, function() {});
+	                   }
+	                 
+	               }
+	            }
+	          location.reload();
+       });
+    }
+
+
       // jQuery Mustache Plug-In 
       (function ($) {
           $.fn.mustache = function (data, partial, stream) {
@@ -244,7 +351,7 @@ $(el).siblings(".sites").css('display','inline');
                     <a href="http://freebase.com/view{{id}}">
                       <img src='http://freebase.com/api/trans/image_thumb{{id}}?maxwidth=200&maxheight=200&errorid=/m/0djw4wd' / >
                       <div class='description'>
-                        <div class='description_content'>{{name}}</div>
+                        <div class='description_content'>&nbsp;{{name}}</div>
                       </div> 
                     </a>     
                  </span>     
@@ -252,35 +359,49 @@ $(el).siblings(".sites").css('display','inline');
            </script>
            
           <script id="tabstemplate" type="x-tmpl-mustache">
-           <ul>
-            <table>
-              {{#tabs}}
-                <tr>
-                  <td>
-                    <a href="{{url}}">
-                      <img style="width:15px; height:15px;" src="{{favicon}}" / >
-                      {{title}}
-                    </a> 
-                  </td>
-                  <td>
-                    <a href="#" onClick="closetab( {{id}} );">close</a>            
-                  </td>
-                  <td>
-                    <a href="#" onClick='keep("{{url}}", "{{title}}")'>keep</a>            
-                  </td>
-                </tr>   
-              {{/tabs}}
-              </table>
-            </ul>
+           <a href="" class ="know" onclick="toggle('#tabstemplate')">tabs:</a>
+           <ul>                         
+                {{#hasmulti}}
+                  close by domain:
+                  {{#multi}}
+                      <a href="#" onclick="closebulk('{{.}}')">{{.}}</a></br>
+                  {{/multi}}
+                {{/hasmulti}}
+              
+              <table>
+                {{#tabs}}
+                  <tr>
+                    <td>
+                      <a href="{{url}}">
+                        <img style="width:15px; height:15px;" src="{{favicon}}" / >
+                        {{title}}
+                      </a> 
+                    </td>
+                    <td>
+                      <a href="#" onClick="closetab( {{id}} );">close</a>            
+                    </td>
+                    <td>
+                      <a href="#" onClick='keep("{{url}}", "{{title}}")'>keep</a>            
+                    </td>
+                  </tr>   
+                {{/tabs}}
+                </table> 
+
+                {{#hasduplicates}}
+                  <a href="#" onclick="closeduplicates()"> close {{duplicates}} duplicates</a>
+                {{/hasduplicates}}
+              </ul>
            </script>
            
           <script id="historytemplate" type="x-tmpl-mustache">
+             <ul id="tabs">
               {{#tabs}}
+                <div>
                       <img style="width:15px; height:15px;" src="{{favicon}}" / >
-                       <a href="#" class="domain" style="font-size:{{font}}">{{domain}}</a>  
+                       <a class="domain" style="font-size:{{font}}">{{domain}}</a>  
                       <br/ >
-                      <ul class="sites" style="display:none;">
-                        <table>
+                      <ul class="sites" id="{{domain}}" style="display:none;">
+                        <table style="position:relative; left:100px;">
                           {{#sites}}
                             <tr>
                               <td>
@@ -293,7 +414,9 @@ $(el).siblings(".sites").css('display','inline');
                           {{/sites}}
                         </table>
                       </ul>
-              {{/tabs}}
+                      </div>
+                {{/tabs}}
+              </ul>
            </script>
 </head>
 <body onload="loadthings()">
@@ -312,7 +435,7 @@ $(el).siblings(".sites").css('display','inline');
 	  </form>
 	  
 	  
-          <h3>tabs:</h3>
+          
           <div id="tablist"></div>
 	
 	        <h3>history:</h3>

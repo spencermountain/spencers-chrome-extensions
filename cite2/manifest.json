@@ -4,11 +4,13 @@
     "version": "0.1",  
     "browser_action": {
         "default_title": "garden",
-        "default_icon": "icon.png",
+        "default_icon": "tie.png",
         "popup": "popup.html"
     },
     "icons": {
-    "16": "flowers.png"
+    "16": "tie.png",
+    "48": "tie48.png",
+    "128": "tie128.png"
   },
   "background_page": "background.html",
   "permissions": [
