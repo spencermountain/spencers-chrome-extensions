@@ -1,13 +1,22 @@
 <html>
 <head>
 	<title>home</title>
-	<script type="text/javascript" src="jquery.js"></script> 
+	<script src="jquery.js" type="text/javascript"></script> 
 	<script src="mustache.js" type="text/javascript"></script>   
 	<script src="parseuri.js" type="text/javascript"></script>   
+	<script src="history.js" type="text/javascript"></script>   
+	<script src="tabs.js" type="text/javascript"></script>  
+	<script src="search.js" type="text/javascript"></script>   
+	<script src="timer.js" type="text/javascript"></script>   
 
     <link type="text/css" rel="stylesheet" href="cool.css" /> 
 	   <script>
 	     
+	     
+	             //make a timer
+        $("#time").everyTime(8000,function(i) {
+          $(this).html(i);          
+        });
 	     
 	     
 	          //make a url into a saved topic
@@ -43,50 +52,10 @@
 	   }
 	   
 	   
-       $(document).ready(function(){
-       
-       
-       
-       //history
-          d = new Date();
-          today=d.getTime();
-          day=d.getDate();
-          yesterday=d.setDate(day-1);
-          chrome.history.search({text:'', startTime:yesterday, endTime:today}, function(tabs){
-          var tablist={};
-            for(var i in tabs){
-               if(tabs[i].url.match(/^chrome/)){continue;}
-               var title=parsetitle(tabs[i].title, tabs[i].url);
-            	 var parsed=parseUri(tabs[i].url);
-	             var favicon=null;
-	             if(parsed.host){
-	               favicon='chrome://favicon/http://'+parsed.host;
-	             }
-	             domain=parsed.host.replace(/^www\./,'');
-	             domain=domain.replace(/\.(org|net|com|co\.uk)/,'')
-	             if(!title){title=domain;}
-	             if(tablist[parsed.host] == null){tablist[parsed.host]={favicon:favicon, sites:[], domain:domain };}	             
-	             tablist[parsed.host].sites.push({ url : tabs[i].url, title : title})	      
-            }   
-            //pivot into an array
-            var tabarr=[];
-            for(var i in tablist){
-              tablist[i].font=tablist[i].sites.length+15;
-              tabarr.push(tablist[i]);          
-            }
-          //  tabarr.sort(function(a,b){return b.font-a.font;});
-            
-            $('#historylist').html('');
-            $('#historytemplate').mustache({tabs:tabarr}).appendTo('#historylist');
-                   
-                   $(".domain").click(function(){
-                        $(this).siblings(".sites").toggle();
-                   });
-          });
+
        
        //get a better title from the title tag
-       function parsetitle(title, url){
-         
+       function parsetitle(title, url){         
          //remove junk home page titles with domains
          var parsed=parseUri(url);
          if(parsed.directory == '/'){
@@ -113,84 +82,6 @@
 	               }
          return $.trim(title);
        }
-
-
-
-
-       
-       
-	   //get open tabs
-	       chrome.windows.getAll({ populate: true }, function(windowlist) {
-	       
-	       //remove current tab
-	       var tabs=[];
-	       var duplicates=0;
-	       var already=[];
-	       var domains=[];
-	       var multi=[];
-	           
-	       for(var i in windowlist){
-	         for(var o in windowlist[i].tabs){
-	         	         
-	           var title=windowlist[i].tabs[o].title;
-	           var url=windowlist[i].tabs[o].url;
-	           
-               //close other hometabs
-               if( windowlist[i].tabs[o].selected == 'false' && url== 'chrome://newtab/'){
-                 closetab(windowlist[i].tabs[o].id);
-               }	
-                   	           
-	           if(url.match(/^https?:\/\//)){	 
-                
-                //make title nicer           
-	               title=parsetitle(title, url);
-	                            	           
-	             //find duplicates
-	               for(var a in already){
-	                 if(already[a]==url){
-	                   duplicates++;
-	                 }
-	               }
-    	           already.push(url);
-    	           
-  	            //favicon
-	               var parsed=parseUri(url);
-	               var favicon='chrome://favicon/http://'+parsed.host;	               
-	           
-	           
-	               //find repeated domains	           
-  	             parsed.host=parsed.host.replace(/^www\./,'');
-  	             for(var d in domains){
-	                 if(domains[d]==parsed.host){
-	                   multi.push(domains[d]);
-	                 }
-	               }	               
-	               domains.push(parsed.host);
-	           
-	           
-	           
-	               tabs.push({ url:url, title:title, favicon:favicon, id:windowlist[i].tabs[o].id});
-	              
-	             }
-	           }
-	       }
-	       
-	       
-	       multi=unique(multi);
-	       
-	       //mustache needs a boolean
-	       var hasduplicates=false;
-	       if(duplicates>0){hasduplicates=true}
-	       var hasmulti=false;
-	       if(multi.length>0){hasmulti=true;}
-	       
-         $('#tabstemplate').mustache({tabs:tabs, duplicates:duplicates, hasduplicates:hasduplicates, multi:multi, hasmulti:hasmulti}).appendTo('#tablist');	     
-	     
-	    }); 
-	     
-	     
-	   });
-	   
 	   
 	   
 	   function closetab(tabId) {
@@ -216,53 +107,29 @@
       }
     return newArray;
   }
-	   
-       var found={};
-       $(document).ready(function(){//freebase search logic 
-       var timeoutID = window.setTimeout(null, 800);
-           var el=$("#query");
-             $(el).focus();
-             el.keyup(function () {
-             var found={};
-              window.clearTimeout(timeoutID);//for fast typing
-              timeoutID = window.setTimeout(function(){
-                            
-              var text = $(el).val(); 
-              var url="http://keep.spencermountain.user.dev.freebaseapps.com/namesearch?callback=?&q="+text;
-                 $.getJSON(url, function(data) {
-                    var html='<tr><a href="#" class="addlearn"><td>'+data.name
-                    +'</td><img src="http://www.freebase.com/api/trans/image_thumb'+data.id
-                    +'?errorid=/m/0djw4wd&maxwidth=200&maxheight=200" / ></a></tr>';
-                    
-                   $("#result").html('<table>'+html+'</table>');                   
-                   found=data;
-                   $(".addlearn").click(function(){
-                       addnew(found);
-                   });
-                   
-                 });
-           
-              }, 800);
-          });
-       });
-       
+	          
        
        
        function toggle(sel){
-          $(sel).toggle()
+          $('#tabshow').toggle()
        }
            
        //localstorage i/o
         function loadthings() {
 	        var data = localStorage["learn"]||'[]';
 	        data=JSON.parse(data);	
+	        console.log(data)
               $('#keeptemplate').mustache({things:data}).appendTo('#showlist');
               renderthings();     
          }
       
         function addnew(obj) { 
+        console.log(obj)
 	        var old = localStorage["learn"] || '[]';
-	        old=JSON.parse(old)
+	        old=JSON.parse(old);
+	        for(var i in old){
+	          if(old[i].link==obj.link){console.log(obj.url+'   - exists');return false; }
+	        }
 	        old.unshift(obj);
 	        localStorage["learn"] = JSON.stringify(old);	
 	        renderthings();
@@ -276,63 +143,46 @@
 	        location.reload();
         }
        
-
-            $('div.description').each(function(){
-              $(this).css('opacity', 0.7);
-              //..set width same as the image...
-              
-              var imgwidth=$(this).siblings('img').width();
-              if(imgwidth<50){imgwidth=100;}
-              $(this).css('width', imgwidth);
-              $(this).parent(".description").css('width', imgwidth);
-              $(this).parents(".wrapper").css('width', imgwidth);
-              $(this).css('display', 'block');
-            });
-            
-              $('.wrapper').hover(function(){  
-                   $(this).children('.description').stop().fadeTo(150, 0.9);  
-               },function(){   
-                   $(this).children('.description').stop().fadeTo(150, 0.7);  
-               }); 
+       
+       renderthings();
 
 
 
-  //close duplicate tabs
-  function closeduplicates(){
-	   chrome.windows.getAll({ populate: true }, function(windowlist) {
-	         var already=[];	           
-	         for(var i in windowlist){
-	           for(var o in windowlist[i].tabs){	         
-	             var url=windowlist[i].tabs[o].url;	        
-	                 for(var a in already){
-	                   if(already[a]==url){
-	                     chrome.tabs.remove(windowlist[i].tabs[o].id, function() {});
-	                   }
-	                 }
-	                 already.push(url);
-	               }
-	            }
-	          location.reload();
+
+
+
+
+
+
+//freebase search logic 
+       var found={};
+       $(document).ready(function(){
+       var timeoutID = window.setTimeout(null, 800);
+           var el=$("#query");
+             $(el).focus();
+             el.keyup(function () {
+             var found={};
+              window.clearTimeout(timeoutID);//for fast typing
+              timeoutID = window.setTimeout(function(){
+                            
+              var text = $(el).val(); 
+              var url="http://keep.spencermountain.user.dev.freebaseapps.com/namesearch?callback=?&q="+text;
+                 $.getJSON(url, function(data) {
+                    var html='<a href="#" class="addlearn">'+data.name
+                    +'<img src="http://www.freebase.com/api/trans/image_thumb'+data.id
+                    +'?errorid=/m/0djw4wd&maxwidth=200&maxheight=200" / ></a>';
+                    
+                   $("#result").html('<span>'+html+'</span>');                   
+                   found=data;
+                   $(".addlearn").click(function(){
+                       addnew(found);
+                   });
+                   
+                 });
+           
+              }, 800);
+          });
        });
-    }
-
-  //bulk close by domain
-  function closebulk(domain){
-     console.log('closing all '+domain)
-	   chrome.windows.getAll({ populate: true }, function(windowlist) {
-	         for(var i in windowlist){
-	           for(var o in windowlist[i].tabs){	
-            	 var parsed=parseUri(windowlist[i].tabs[o].url);
-	             parsed.host=parsed.host.replace(/^www\./,'');
-	                   if(parsed.host==domain){
-	                     chrome.tabs.remove(windowlist[i].tabs[o].id, function() {});
-	                   }
-	                 
-	               }
-	            }
-	          location.reload();
-       });
-    }
 
 
       // jQuery Mustache Plug-In 
@@ -345,11 +195,15 @@
       })(jQuery);
        </script>
        
+           <script id="searchtemplate" type="x-tmpl-mustache">    
+                  {{name}}  
+           </script>
+                  
            <script id="keeptemplate" type="x-tmpl-mustache">
               {{#things}}                  
                   <span class='wrapper'>
-                    <a href="http://freebase.com/view{{id}}">
-                      <img src='http://freebase.com/api/trans/image_thumb{{id}}?maxwidth=200&maxheight=200&errorid=/m/0djw4wd' / >
+                    <a href="{{link}}">
+                      <img src='{{image}}' / >
                       <div class='description'>
                         <div class='description_content'>&nbsp;{{name}}</div>
                       </div> 
@@ -360,7 +214,7 @@
            
           <script id="tabstemplate" type="x-tmpl-mustache">
            <a href="" class ="know" onclick="toggle('#tabstemplate')">tabs:</a>
-           <ul>                         
+           <ul id="tabshow">                         
                 {{#hasmulti}}
                   close by domain:
                   {{#multi}}
@@ -368,24 +222,24 @@
                   {{/multi}}
                 {{/hasmulti}}
               
-              <table>
-                {{#tabs}}
-                  <tr>
-                    <td>
-                      <a href="{{url}}">
-                        <img style="width:15px; height:15px;" src="{{favicon}}" / >
-                        {{title}}
-                      </a> 
-                    </td>
-                    <td>
-                      <a href="#" onClick="closetab( {{id}} );">close</a>            
-                    </td>
-                    <td>
-                      <a href="#" onClick='keep("{{url}}", "{{title}}")'>keep</a>            
-                    </td>
-                  </tr>   
-                {{/tabs}}
-                </table> 
+                <table>
+                    {{#tabs}}
+                      <tr>
+                        <td>
+                          <a href="{{url}}">
+                            <img style="width:15px; height:15px;" src="{{favicon}}" / >
+                            {{title}}
+                          </a> 
+                        </td>
+                        <td>
+                          <a href="#" onClick="closetab( {{id}} );">close</a>            
+                        </td>
+                        <td>
+                          <a href="#" onClick='keep("{{url}}", "{{title}}")'>keep</a>            
+                        </td>
+                      </tr>   
+                    {{/tabs}}
+                  </table> 
 
                 {{#hasduplicates}}
                   <a href="#" onclick="closeduplicates()"> close {{duplicates}} duplicates</a>
@@ -422,6 +276,7 @@
 <body onload="loadthings()">
 
 <div id="total"></div>
+<div id="time"></div>
 
 	<div id="showlist">	
 	</div>	
@@ -430,7 +285,7 @@
 	<br />	
 	
 	  <form action="#" onsubmit="addnew(found)">
-	    <input id="query" value=""/>
+	    <input id="query" style="height:60; position:relative; color:grey; font-size:32px;" autocomplete="off" value=""/>
       <div id="result"></div>
 	  </form>
 	  

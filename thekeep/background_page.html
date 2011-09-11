@@ -1,26 +1,31 @@
 
-<script type="text/javascript" src="encode.js"></script> 
+<script src="jquery.js" type="text/javascript"></script> 
 <script>
 
 
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+$(document).ready(function(){
+  
+  chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 
 //add this wikipedia page to the home page
-    if (request.method == "addwikipedia" && request.url.match('wikipedia.org/wiki/')){
-        var title=request.url.replace('http://en.wikipedia.org/wiki/','')
-        var id='/wikipedia/en/'+mqlkey_quote(title);
-        var obj={name:title, url:request.url, "/common/topic/weblink": request.url, id:id}
-        var old = localStorage["learn"] || '[]';
-        old=JSON.parse(old)
-        old.unshift(obj);
-        localStorage["learn"] = JSON.stringify(old);	       
-    
-        sendResponse({page: title});
+      
+     if (request.method == "addwikipedia" && request.url.match('wikipedia.org/wiki/')){
+      
+                 var url="http://keep.spencermountain.user.dev.freebaseapps.com/uri_recon?callback=?&url="+request.url;
+                 $.getJSON(url, function(obj) {
+                      var old = localStorage["learn"] || '[]';
+                      old=JSON.parse(old)
+                      old.unshift(obj);
+                      localStorage["learn"] = JSON.stringify(old);	
+                      sendResponse({page: obj.name});                   
+                 });
+      
       }
-    else
-      {sendResponse({}); // snub them.
+      else{sendResponse({}); // snub them.
       }
+      
+      
+  });
+
 });
-
-
 </script>
