@@ -9,17 +9,30 @@ $(document).ready(function(){
 
 //add this wikipedia page to the home page
       
-     if (request.method == "addwikipedia" && request.url.match('wikipedia.org/wiki/')){
+     if (request.method == "addwikipedia" && request.url.match('wikipedia.org/wiki/') && !request.url.match('wikipedia.org/wiki/Category:')){
+      
+             var old = localStorage["learn"] || '[]';
+             old=JSON.parse(old);
+                      
+                      //detect existing
+                      for(var i in old){
+                        if(old[i].url==url){
+                          return sendResponse({}); // snub them.
+                        }                      
+                      }
       
                  var url="http://keep.spencermountain.user.dev.freebaseapps.com/uri_recon?callback=?&url="+request.url;
-                 $.getJSON(url, function(obj) {
+                 console.log(url)
+                 $.getJSON(url, function(obj) { 
                       var old = localStorage["learn"] || '[]';
-                      old=JSON.parse(old)
+                      old=JSON.parse(old);                    
+                      console.log(old)
                       old.unshift(obj);
                       localStorage["learn"] = JSON.stringify(old);	
-                      sendResponse({page: obj.name});                   
-                 });
-      
+                      console.log('this')
+                      console.log(obj)
+                      return sendResponse({page: obj.name});                   
+                 });      
       }
       else{sendResponse({}); // snub them.
       }

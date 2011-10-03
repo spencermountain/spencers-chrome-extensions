@@ -247,6 +247,21 @@
               </ul>
            </script>
            
+           
+            <script id="maptemplate" type="x-tmpl-mustache">
+              {{#maps}}                  
+                  <span class='wrapper'>
+                    <a href="{{link}}">
+                      <img src='{{image}}' / >
+                      <div class='description'>
+                        <div class='description_content'>&nbsp;{{q}}</div>
+                      </div> 
+                    </a>     
+                 </span>     
+              {{/maps}}
+           </script>
+           
+           
           <script id="historytemplate" type="x-tmpl-mustache">
              <ul id="tabs">
               {{#tabs}}
@@ -293,8 +308,12 @@
           
           <div id="tablist"></div>
 	
+          <h3>maps:</h3>
+          <div id="maplist"></div>
+          
 	        <h3>history:</h3>
           <div id="historylist"></div>
+          
 	
 </body>
 </html>
