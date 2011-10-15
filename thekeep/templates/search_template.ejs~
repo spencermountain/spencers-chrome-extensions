@@ -1,0 +1,7 @@
+
+
+ <div id="searches">
+  <% for(var i in items){ %>
+   <a href="<%= items[i].url %>" style=""><%= items[i].q %></a> 
+  <% } %>
+ </div>

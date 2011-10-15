@@ -1,0 +1,57 @@
+<html>
+    
+    <head>
+    <style>
+ body{padding:0;margin:0;text-align:center;color:#666;font-weight:normal;font-family:"Helvetica","Univers","Helvetica Neue",arial,helvetica,sans-serif; text-align:justify;font-size:18px;line-height:1.5em;padding-bottom:24px;letter-spacing:0.3pt;color:#808080;}
+ a{color:#80b0ff;}
+ </style> 
+ 
+	<script type="text/javascript" src="jquery.js"></script> 
+        <script>
+        
+       $(document).ready(function(){
+       
+     chrome.windows.create({url:'state.html',width:200, height:200, left:400}, function(){})
+       
+       
+             chrome.tabs.getSelected(null, function(tab) {
+             
+             console.log(tab);
+             
+             $("#text2").html(JSON.stringify(tab))
+
+
+              chrome.tabs.sendRequest(tab.id, {
+                method: "getBody"
+              }, 
+              function(response) {
+                var text = document.getElementById('text');
+                text.innerHTML = response.body;
+              });
+
+                  
+               });
+               
+               
+               
+              
+              
+      });
+                
+
+            
+        </script>
+
+    </head>
+    <body style="width:400px; height:300px;">
+    hiya
+
+
+    <textarea id="text" style="width:300px; height:300px;"> </textarea>
+<textarea id="text2" style="width:300px; height:300px;"> </textarea>
+
+<div id="smartcite"></div>
+    </body>
+
+</html>
+

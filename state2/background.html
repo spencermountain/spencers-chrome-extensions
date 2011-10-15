@@ -1,0 +1,62 @@
+<script src="http://code.jquery.com/jquery-latest.js">
+</script>
+<script>
+    $(document).ready(function() {
+
+
+        // This event is fired each time the user updates the text in the omnibox,
+        // as long as the extension's keyword mode is still active.
+        chrome.omnibox.onInputChanged.addListener(
+        function(text, suggest) {
+        console.log('hi')
+            if(!text){return}
+            if(!text.match(/[^ ] [^ ]/)){return}
+            var sugg = [];
+            var url = "http://192.168.3.193:3141/opinion/" + text + "?verbose=true&callback=?";
+            console.log(text)
+            $.getJSON(url, function(the) {
+                        console.log(the)
+                 for (var i in the.result) {                           
+                   var opinion = '';              
+                   var opinions=[];
+                   for (var o in the.result[i].opinions) {
+                     opinions.push(the.result[i].opinions[o].title);
+                   }
+                    opinion='<dim> state </dim> '+the.result[i].noun.word.toUpperCase() + ' : '+opinions.join(', ');  
+                    console.log(opinion)               
+                    console.log(text)               
+                    sugg.push({
+                      content: opinion,
+                      description: opinion
+                     }); 
+                  }
+                 
+                  suggest(sugg);
+                  if(sugg.length==0){
+                      resetDefaultSuggestion(text);
+                  }
+            });
+
+        });
+
+        function resetDefaultSuggestion(text) {
+            chrome.omnibox.setDefaultSuggestion({
+                description: 'state it'
+            });
+        }
+
+        // This event is fired with the user accepts the input in the omnibox.
+       /* chrome.omnibox.onInputEntered.addListener(
+
+        function(text) {
+            text = text.replace(/ /g, '_');
+            var url = "http://en.wikipedia.org/wiki/" + text;
+            return chrome.tabs.create({
+                url: url
+            });
+
+        });*/
+
+    });
+</script>
+

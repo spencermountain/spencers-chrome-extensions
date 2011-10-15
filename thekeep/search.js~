@@ -1,0 +1,8 @@
+
+$(document).ready(function() {                         
+   var data=[{title:'es'},{title:'eee'}];
+   var result = new EJS({url: './templates/search_template.ejs'}).render({items:data});
+   $('#search_template').html(result);                       
+  })
+
+

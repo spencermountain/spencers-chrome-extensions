@@ -54,15 +54,35 @@ console.log('last week = '+lastweek);
               for(var i in tabs){
                if(tabs[i].url.match(/^https?:\/\/maps\.google\./)){
                    var parsed=parseUri(tabs[i].url);
-                   console.log(parsed.queryKey.q)
                    var q=parsed.queryKey.q;
-                   var image='http://maps.googleapis.com/maps/api/staticmap?center='+q+'&zoom=14&size=250x250&maptype=roadmap&sensor=false'
+                   console.log('map'+q)
+                   var zoom=parsed.queryKey.z;
+                   var image='http://maps.googleapis.com/maps/api/staticmap?center='+q+'&zoom='+zoom+'&size=200x200&maptype=roadmap&sensor=false'
                    maplist.push({url:tabs[i].url, image:image, q:q});
                }
               }
                //display map view
               $('#maplist').html('');
               $('#maptemplate').mustache({maps:maplist}).appendTo('#maplist');
+              
+              
+               //get the google searches
+              var searchlist=[];
+              for(var i in tabs){
+               if(tabs[i].url.match(/google\..*?\/search/)){
+                   var parsed=parseUri(tabs[i].url);
+                   var q=parsed.queryKey.q;
+                   q=decodeURI(q);
+                   console.log('hi'+q);
+                   searchlist.push({title:q});
+               }
+              }              
+                 var result = new EJS({url: './templates/search_template.ejs'}).render({items:searchlist});
+                 $('#search_template').html(result);                       
+              
+              
+              
+              //events
                      
              $(".domain").click(function(){
                   $(this).siblings(".sites").toggle();

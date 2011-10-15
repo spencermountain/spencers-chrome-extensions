@@ -156,6 +156,7 @@ body{
   writing-mode: lr-tb;
   z-index: auto;
   zoom: 1;
+  background:#343a3f;
   line-height: 155%;
   width:100%;
 }

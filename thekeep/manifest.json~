@@ -4,7 +4,7 @@
   "chrome_url_overrides": {
     "newtab": "home.html"
   },
-  "permissions": ["tabs", "history","chrome://favicon/","geolocation","management"],
+  "permissions": ["tabs", "history","chrome://favicon/","geolocation"],
   "content_scripts": [
     {
     "run_at":"document_idle",
