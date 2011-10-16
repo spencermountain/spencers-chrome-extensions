@@ -57,24 +57,7 @@ $(document).ready(function(){
 	       }
 	       
 	       
-	       	       multi=unique(multi);
-	      /* 
-	       //mustache needs a boolean
-	       var hasduplicates=false;
-	       if(duplicates>0){hasduplicates=true}
-	       var hasmulti=false;
-	       if(multi.length>0){hasmulti=true;}
-	       
-	       if(tabs.length>3){
-         $('#tabstemplate').mustache({
-             tabs:tabs, 
-             duplicates:duplicates, 
-             hasduplicates:hasduplicates,
-             multi:multi, 
-             hasmulti:hasmulti
-           }).appendTo('#tablist');	     
-	     }
-	     */
+	       	    //   multi=unique(multi);
 	     
 	     var obj={
              tabs:tabs, 
@@ -126,3 +109,42 @@ $(document).ready(function(){
 	          location.reload();
        });
     }
+    
+    
+       //get a better title from the title tag
+       function parsetitle(title, url){         
+         //remove junk home page titles with domains
+         var parsed=parseUri(url);
+         if(parsed.directory == '/'){
+           return title=parsed.host;
+         }
+         
+         var parts=title.split(/\W[\||\-]\W/);
+         if(!parts || parts.length<2){return title;}
+         
+         if(parts[0].length < parts[parts.length-1].length){
+           title=parts[parts.length-1]
+         }else{
+           title=parts[0];
+         }
+         if (title.length > 40){
+                   var tokens=title.split(' ');
+	                  for(var i in tokens){
+	                    title+=' '+tokens[i];
+	                    if(title.length>40){ 
+	                      title+='...';
+	                      break
+	                      }
+	                  }
+	               }
+         return $.trim(title);
+       }
+       
+ 	    function closetab(tabId) {
+        try {
+          chrome.tabs.remove(tabId, function() {});
+        } catch (e) {
+          alert(e);
+        }
+          location.reload();
+      }

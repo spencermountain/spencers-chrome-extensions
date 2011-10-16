@@ -20,8 +20,9 @@ $(document).ready(function(){
      if (request.method == "addwikipedia" && request.url.match('wikipedia.org/wiki/') && !request.url.match('wikipedia.org/wiki/Category:')){
       console.log('hhhhh')
              var old = localStorage["learn"] || '[]';
-             old=JSON.parse(old);
-                      
+            
+            try{ old=JSON.parse(old);
+                }catch(e){old=[];}      
               //detect existing
               for(var i in old){
                 if(old[i].url==url){

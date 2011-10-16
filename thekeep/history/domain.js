@@ -12,7 +12,7 @@ function get_domains(tabs){
          }
          domain=parsed.host.replace(/^www\./,'');
          domain=domain.replace(/\.(org|net|com|co\.uk)/,'');
-         domain=domain.replace(/.*?\.(.{4}.*?)/,'$1');
+         domain=domain.replace(/.*?\.(.{4}.*?)/,'$1');//regex subdomain
          if(!title){title=domain;}
          if(tablist[parsed.host] == null){tablist[parsed.host]={favicon:favicon, sites:[], domain:domain };}	             
          tablist[parsed.host].sites.push({ url : tabs[i].url, title : title})	      

@@ -1,15 +1,16 @@
 <html>
 <head>
 	<title>home</title>
-	<script src="./lib/jquery.js" type="text/javascript"></script> 
-	<script src="./lib/mustache.js" type="text/javascript"></script>   
+	<script src="./lib/jquery.js" type="text/javascript"></script>   
 	<script src="./lib/parseuri.js" type="text/javascript"></script>   
   <script src="./lib/ejs.js"></script>  
 	<script src="./history/history.js" type="text/javascript"></script>   
 	<script src="./history/domain.js" type="text/javascript"></script>   
 	<script src="./history/maps.js" type="text/javascript"></script>   
 	<script src="./history/search.js" type="text/javascript"></script>   
-	<script src="./history/tabs.js" type="text/javascript"></script>    
+	<script src="./history/group.js" type="text/javascript"></script>   
+	<script src="./history/tabs.js" type="text/javascript"></script>  
+	<script src="./history/topics.js" type="text/javascript"></script>     
 	<script src="color.js" type="text/javascript"></script>   
 	<script src="apps.js" type="text/javascript"></script> 
 	
@@ -17,205 +18,48 @@
 	   <script>
 	     
 	     
-   var refreshId = setInterval(function(){
-     $('#time').prepend('ya ');
-   }, 8000);//60000ms equals 1 minute
-	     
-	          //make a url into a saved topic
-       function keep(url, title){
-           var url="http://thekeep.freebaseapps.com/uri_recon?callback=?&url="+url;     //send url to freebase	    
-           $.getJSON(url, function(data) {
-              alert(JSON.stringify(data));
-              addnew(data);                       
-           });
-       }
+      $(document).ready(function(){
+	           
+         var refreshId = setInterval(function(){
+           $('#time').prepend('ya ');
+         }, 8000);//60000ms equals 1 minute
+	           
+
+
+
+
+      });
+
+               </script>
        
-	  function renderthings(){	   
-               var timeoutID2 = window.setTimeout(      
-                    function(){
-                              $('div.description').each(function(){
-                                  $(this).css('opacity', 0.7);
-                                  //..set width same as the image...
-                                  
-                                  var imgwidth=$(this).siblings('img').width();
-                                  if(imgwidth<50){imgwidth=150;}
-                                  $(this).css('width', imgwidth);
-                                  $(this).parent(".description").css('width', imgwidth);
-                                  $(this).parents(".wrapper").css('width', imgwidth);
-                                  $(this).css('display', 'block');
-                                });
-                          
-                            $('.wrapper').hover(function(){  
-                                 $(this).children('.description').stop().fadeTo(150, 0.9);  
-                             },function(){   
-                                 $(this).children('.description').stop().fadeTo(150, 0.7);  
-                             });            
-                         },100);
-	   }
-	   
-	   
-
-       
-       //get a better title from the title tag
-       function parsetitle(title, url){         
-         //remove junk home page titles with domains
-         var parsed=parseUri(url);
-         if(parsed.directory == '/'){
-           return title=parsed.host;
-         }
-         
-         var parts=title.split(/\W[\||\-]\W/);
-         if(!parts || parts.length<2){return title;}
-         
-         if(parts[0].length < parts[parts.length-1].length){
-           title=parts[parts.length-1]
-         }else{
-           title=parts[0];
-         }
-         if (title.length > 40){
-                   var tokens=title.split(' ');
-	                  for(var i in tokens){
-	                    title+=' '+tokens[i];
-	                    if(title.length>40){ 
-	                      title+='...';
-	                      break
-	                      }
-	                  }
-	               }
-         return $.trim(title);
-       }
-	   
-	   
-	   function closetab(tabId) {
-        try {
-          chrome.tabs.remove(tabId, function() {});
-        } catch (e) {
-          alert(e);
-        }
-	        location.reload();
-      }
-	   
-	   
-	   
-	    //remove duplicates from array
- function unique(x) {
-   var newArray=new Array();
-    label:for(var i=0; i<x.length;i++ ){
-      for(var j=0; j<newArray.length;j++ ){ 
-          if(newArray[j]==x[i]) 
-          continue label;
-        }
-        newArray[newArray.length] = x[i];
-      }
-    return newArray;
-  }
-	          
-       
-       
-       function toggle(sel){
-          $('#tabshow').toggle()
-       }
-           
-       //localstorage i/o
-        function loadthings() {
-	        var data = localStorage["learn"]||'[]';
-	        data=JSON.parse(data);	
-	        console.log(data)
-              $('#keeptemplate').mustache({things:data}).appendTo('#showlist');
-              renderthings();     
-         }
-      
-        function addnew(obj) { 
-        console.log(obj)
-	        var old = localStorage["learn"] || '[]';
-	        old=JSON.parse(old);
-	        for(var i in old){
-	          if(old[i].link==obj.link){console.log(obj.url+'   - exists');return false; }
-	        }
-	        old.unshift(obj);
-	        localStorage["learn"] = JSON.stringify(old);	
-	        renderthings();
-	        location.reload();
-        }
-
-
-        function erasethings() {
-	        localStorage.removeItem("learn");	
-	        localStorage["learn"] = JSON.stringify([]);
-	        location.reload();
-        }
-       
-       
-       renderthings();
-
-
-
-
-
-      // jQuery Mustache Plug-In 
-      (function ($) {
-          $.fn.mustache = function (data, partial, stream) {
-          	if (Mustache && data) {
-          	    return $(Mustache.to_html(this.text(), data, partial, stream));
-              }
-          };
-      })(jQuery);
-       </script>
-       
-                  
-           <script id="keeptemplate" type="x-tmpl-mustache">
-              {{#things}}                  
-                  <span class='wrapper'>
-                    <a href="{{link}}">
-                      <img src='{{image}}' / >
-                      <div class='description'>
-                        <div class='description_content'>&nbsp;{{name}}</div>
-                      </div> 
-                    </a>     
-                 </span>     
-              {{/things}}
-           </script>
-           
-           
-          <script id="historytemplate" type="x-tmpl-mustache">
-             <ul id="tabs">
-              {{#tabs}}
-                <div>
-                      <img style="width:15px; height:15px;" src="{{favicon}}" / >
-                       <a class="domain" style="font-size:{{font}}">{{domain}}</a>  
-                      <br/ >
-                      <ul class="sites" id="{{domain}}" style="display:none;">
-                        <table style="position:relative; left:100px;">
-                          {{#sites}}
-                            <tr>
-                              <td>
-                               <a href="{{url}}">{{title}}</a>
-                              </td>
-                              <td>
-                                <a href="#" onClick='keep("{{url}}", "{{title}}")'>keep</a>
-                              </td>
-                            </tr>
-                          {{/sites}}
-                        </table>
-                      </ul>
-                      </div>
-                {{/tabs}}
-              </ul>
-           </script>
 </head>
-<body onload="loadthings()">
+<body>
+
+    <div id="top" style=" width:100%; top:0px; text-align:right; font-size:14px;">
+      <span>        
+        <a href="#" class="dodate" >current</a> 
+        <a href="#" class="dodate" >today</a>   
+        <a href="#" class="dodate" >this week</a>  
+      </span>
+    </div>
 
 <div id="time"></div>
 <div id="total"></div>
 	  	  
 
 	<div id="showlist">	          
+          <h3>topics:</h3>
+          <div id="topic_template"></div>
+          
           <h3>tabs:</h3>
           <div id="tabs_template"></div>
 	
           <h3>maps:</h3>
           <div id="maps_template"></div>
     
+          <h3>times:</h3>
+          <div id="group_template"></div>
+                    
           <h3>searches:</h3>
           <div id="search_template"></div>
       

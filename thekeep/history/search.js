@@ -15,9 +15,23 @@ function get_search(tabs){
            }
        }
       }              
-      searchlist=json_unique(searchlist, 'q')
+      
+      //cluster searches by 20 minute sessions
+      var times=[]
+      for(var i in searchlist){
+        i=parseInt(i)
+        if(searchlist[i-1] && searchlist[i-1].lastVisitTime-1200000 < searchlist[i].lastVisitTime){
+          times[times.length-1].push(searchlist[i])        
+        }
+        else{
+        times.push([searchlist[i]])
+        }      
+      } 
+      console.log(times)
+      
+      //searchlist=json_unique(searchlist, 'q')
          
-     var template_html = new EJS({url: './templates/search_template.ejs'}).render({items:searchlist});
+     var template_html = new EJS({url: './templates/search_template.ejs'}).render({items:times});
      $('#search_template').html(template_html);                       
   
       
