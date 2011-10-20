@@ -12,25 +12,19 @@
             if(!text){return}
             if(!text.match(/[^ ] [^ ]/)){return}
             var sugg = [];
-            var url = "http://192.168.3.193:3141/opinion/" + text + "?verbose=true&callback=?";
+            var url = "http://localhost:3141/opinion_parse/" + text + "?verbose=true&callback=?";
             console.log(text)
             $.getJSON(url, function(the) {
-                        console.log(the)
-                 for (var i in the.result) {                           
-                   var opinion = '';              
-                   var opinions=[];
-                   for (var o in the.result[i].opinions) {
-                     opinions.push(the.result[i].opinions[o].title);
+                 console.log(the)
+                 for (var i in the.result) {
+                   if(the.result[i].weight < parseInt(the.result[0].weight/2)){
+                     
                    }
-                    opinion='<dim> state </dim> '+the.result[i].noun.word.toUpperCase() + ' : '+opinions.join(', ');  
-                    console.log(opinion)               
-                    console.log(text)               
                     sugg.push({
-                      content: opinion,
-                      description: opinion
-                     }); 
+                      content: JSON.stringify(the.result[i]),
+                      description: the.result[i].title
+                     });
                   }
-                 
                   suggest(sugg);
                   if(sugg.length==0){
                       resetDefaultSuggestion(text);
@@ -46,16 +40,14 @@
         }
 
         // This event is fired with the user accepts the input in the omnibox.
-       /* chrome.omnibox.onInputEntered.addListener(
-
+        chrome.omnibox.onInputEntered.addListener(
         function(text) {
-            text = text.replace(/ /g, '_');
-            var url = "http://en.wikipedia.org/wiki/" + text;
+            var url = "land.html?q=" + text;
             return chrome.tabs.create({
                 url: url
             });
 
-        });*/
+        });
 
     });
 </script>

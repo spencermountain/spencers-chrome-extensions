@@ -1,0 +1,17 @@
+<script src="jquery.js"></script>  
+<script>
+ $(document).ready(function() {
+    var j=window.location.href.replace(/.*?\?q=/,'');//hack
+    j=decodeURI(j);
+    try{j=JSON.parse(j);
+    }catch(e){j=[];}
+    console.log(j);
+    var html='<img src="'+j.topic.avatar.href+'"/ >  -  '+j.title
+    $("#fun").html(html)
+});
+</script>
+
+
+<span id="fun"></span>
+
+<span style="background-color:#8d1717; color:white; font-size:30px;">+ state it</span>
