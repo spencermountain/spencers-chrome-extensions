@@ -12,19 +12,10 @@
     "16": "freebase16.jpg",
     "48": "freebase48.jpg"
   },
-  "background_page": "background.html",
   "permissions": [
    "tabs",
    "chrome://favicon/",
    "http://*/*", 
    "https://*/*"
- ],
- "content_scripts": [
-  {
-    "matches": ["http://*/*"],
-    "js": ["selection.js"],
-    "run_at": "document_start",
-    "all_frames": true
-  }
  ]
 }
