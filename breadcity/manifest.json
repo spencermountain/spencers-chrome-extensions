@@ -1,0 +1,23 @@
+{
+  "name": "Bread city",
+  "version": "0.1",
+  "chrome_url_overrides": {
+    "newtab": "home.html"
+  },
+  "permissions": ["tabs", "history","chrome://favicon/","geolocation","management"],
+  "content_scripts": [
+    {
+    "run_at":"document_idle",
+     "matches": [
+        "*://en.wikipedia.org/wiki/*"
+      ],     
+      "exclude_matches": [
+        "*://en.wikipedia.org/wiki/Category:*"
+      ],
+      "js": [
+        "spotwiki.js"
+      ]
+    }
+  ],
+  "background_page":"background_page.html"
+}

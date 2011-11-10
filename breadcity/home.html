@@ -1,0 +1,91 @@
+<html>  
+  <head>
+    <title>
+      home
+    </title>
+    <script src="./lib/jquery.js" type="text/javascript">
+    </script>
+    <script src="./lib/parseuri.js" type="text/javascript">
+    </script>
+    <script src="./lib/ejs.js">
+    </script>
+    <script src="./lib/underscore.js">
+    </script>
+    
+    <script src="./history/tabs.js" type="text/javascript">
+    </script>
+    <script src="./history/topics.js" type="text/javascript">
+    </script>
+    <script src="./history/history.js" type="text/javascript">
+    </script>
+    <script src="apps.js" type="text/javascript">
+    </script>
+    
+    <script src="color.js" type="text/javascript">
+    </script>    
+    <script src="./lib/d3.js" type="text/javascript">
+    </script>
+    <script src="./svg/mostgraph.js" type="text/javascript">
+    </script>
+    <script src="./svg/piegraph.js" type="text/javascript">
+    </script>
+    
+    <link type="text/css" rel="stylesheet" href="cool.css" />
+    <script>
+   $(document).ready(function() {
+
+        var refreshId = setInterval(function() {
+          $('#time').prepend('ya ');
+        }, 8000); //60000ms equals 1 minute
+
+        $("#tabs").click(function() {
+          showtabs($("#stage"));      
+        });
+        
+        $("#topics").click(function() {             
+          showtopics($("#stage"));
+        });
+        
+       $("#apps").click(function() {
+          showapps($("#stage"));
+        });
+        
+       $("#today").click(function() {
+          showstats($("#stage"));
+        });
+
+$("#today").click();
+
+      });
+    </script>
+    <style>
+      svg { font: 10px sans-serif; shape-rendering: crispEdges;
+      }
+    </style>
+  </head>
+  
+  <body >
+    <div id="time" >
+    </div>
+    
+    <div id="stage" style="vertical-align:center;" >
+      hi
+    </div>
+    
+    <table id="showlist" style="position:absolute; width:100%; bottom:0px; font-size:23px">
+      <Tr>
+        <td>
+            <a href="#" id="today">today</a>
+        </td>
+        <td>         
+            <a href="#" id="topics">topics</a>
+        </td>
+        <td>
+            <a href="#" id="tabs">tabs</a>
+        </td>
+        <td>
+             <a href="#" id="apps">apps</a>
+        </td>
+      </tr>
+    </table>
+  </body>
