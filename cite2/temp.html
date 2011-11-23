@@ -10,8 +10,8 @@
         <script>
        
        
-       var seconds=40;
-        var refreshId = setInterval(function() {
+         var seconds=40;
+     var refreshId = setInterval(function() {
           seconds--;
           $('#time').html(seconds);
           if(seconds==0){window.close();}
@@ -24,12 +24,9 @@
        
              chrome.tabs.getSelected(null, function(tab) {
             
-            
+          //  alert(tab.id)
     chrome.tabs.sendRequest(tab.id, {counter: 1}, function handler(response) {
-      
-      
-      var head=$(response.head)
-      alert($(head).find("title").text())
+      alert(JSON.stringify(response))
     
     })
             
@@ -53,9 +50,41 @@
                 
                 
                 
-
+                
+                  chrome.tabs.sendRequest(tab.id, {method: "getSelector"}, function (response) {
+                    alert(JSON.stringify(response))
+                  })         
              
+             
+                   //get selected quote
+                  chrome.tabs.sendRequest(tab.id, {method: "getSelection"}, function (response) {
+                    alert(JSON.stringify(response))
+    
+                    
+                    cite.quotation=response.data
+                   
+                       //get publisher
+                       var url= 'http://referee.freebaseapps.com/jsonapi?callback=?&url='+tab.url;
+                      /* $.getJSON(url, function(data) {
+                       console.log('return referee')
+                           var html='';
+                           if(data){
+                             data=data.replace('\n','');//known bug
+                           }
+                           cite.publisher=data;
+                           
+                           
+                           
 
+                           
+                          var text = document.getElementById('text'); 
+                          text.innerHTML = JSON.stringify(cite,null,2);
+                           
+                           
+                        });   */
+             
+                       
+                  });
                   
                   
                     //get pages that cite this

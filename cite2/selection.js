@@ -1,7 +1,10 @@
-chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+/*chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+
+alert('hit')
+
     if (request.method == "getSelection")
      { 
-      sendResponse({});
+       sendResponse({eee:66});
      //sendResponse({data: window.getSelection().toString()});
      }   
     if (request.method == "getSelector" && request.selector)//scraper
@@ -20,9 +23,26 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
              }
            }
 
-      sendResponse({});
+      sendResponse({ddd:3});
      }
     else
-      sendResponse({}); // snub them.
+      sendResponse({lkj:2}); // snub them.
+});
+*/
+
+
+chrome.extension.onConnect.addListener(function(port) {
+  port.onMessage.addListener(function(msg) {
+    port.postMessage({counter: msg.counter+1});
+  });
 });
 
+chrome.extension.onRequest.addListener(
+  function(request, sender, sendResponse) {
+  
+  var metas=document.getElementsByTagName("meta");
+    sendResponse({lk:776, metas: metas })
+    
+    }
+  );
+ 

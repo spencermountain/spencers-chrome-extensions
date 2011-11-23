@@ -38,45 +38,40 @@
 
  chrome.tabs.getSelected(null, function(tab) {
  
+ var title=tab.title;
+ 
       var html = '';
       //wikipedia
       if (tab.url.match(/wikipedia\.org\/wiki/)) {
         if (tab.url.match(/wikipedia\.org\/wiki\/Category/)) {
-          html = wpcat(tab.url);
+          html = wpcat(tab.url, title);
         } else {
-          html = wppage(tab.url);
+          html = wppage(tab.url, title);
         }
       }
       //freebase
       if (tab.url.match(/freebase\.com\/view/)) {
-        html = freebase(tab.url);
+        html = freebase(tab.url, title);
       }
       //dmoz
       if (tab.url.match(/dmoz\.org/)) {
-        html = dmoz(tab.url);
+        html = dmoz(tab.url, title);
       }
 
 
       //make a url into a saved topic
-      var url = "http://thekeep.freebaseapps.com/uri_recon?callback=?&url=" + tab.url; //send url to freebase
+      var url = "http://thekeep.freebaseapps.com/uri_recon?callback=?&url=" + encodeURI(tab.url); //send url to freebase
       $.getJSON(url, function(data) {
-        console.log('hi')
         console.log(data);
-        var url = data["/common/topic/weblink"];
-        if (url != '') {
+        if (data.id) {
           var html = '<h3><img src="http://freebase.com/favicon.ico" style="width:15px;height:15px;"/ >Freebase</h3>' 
-          html+= '<ul><a href="#" onClick="goto(\'http://freebase.com/view/' + data.id + '\') ">edit ' + data.name + '</a></ul><br/ >';
-        } else {
-          var html = unknown_page(tab.url);
+          html+= '<ul> edit <a href="#" onClick="goto(\'http://freebase.com/view/' + data.id + '\') "> ' + data.name + '</a></ul><br/ >';
+        }else{
+         html = unknown_page(tab.url, title);
         }
-
         document.body.innerHTML = '<p></p>' + html + document.body.innerHTML; //prepend given html
       });
 
-
-      if (html == '') {
-        html = unknown_page(tab.url);
-      }
 
       document.body.innerHTML = '<p></p>' + html + document.body.innerHTML; //prepend given html
 
@@ -105,11 +100,11 @@
 
 
 
-              function freebase(url) {
+              function freebase(url, title) {
                 var id = parseUri(url).path;
                 id = id.replace('/view', '');
                 id = id.replace(/\/\-.*?/, '');
-                var html='<div style="overflow: hidden;"><iframe style="width:175px; height:175px; overflow: hidden;" frameBorder="0" src="http://qrtopics.spencermountain.user.dev.freebaseapps.com/index?topic=/en/radiohead"></iframe></div>';
+                var html='';
                 html +='<h3><img src="http://freebase.com/favicon.ico" style="width:15px;height:15px;"/ >freebase</h3>'
                 html+='<ul>'
                 html+= '<a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromtype?type=' + id + '\') ">topics on this page</a><br/ >'
@@ -119,7 +114,7 @@
 
 
 
-              function wppage(url) {
+              function wppage(url, title) {
                 var title = url.replace(/.*?wikipedia.org\/wiki\//, '');
                 var html= '<h3><img src="http://en.wikipedia.org/favicon.ico" style="width:15px;height:15px;"/ >Wikipedia</h3>'
                 html+='<ul>'
@@ -131,16 +126,16 @@
                 return html;
               }
 
-              function wpcat(url) {
+              function wpcat(url, title) {
                 var title = url.replace(/.*?wikipedia.org\/wiki\//, '');
                 var depth = 1;
                 var html ='<h3><img src="http://en.wikipedia.org/favicon.ico" style="width:15px;height:15px;"/ >Wikipedia</h3>'
-                html+= '<ul><a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromcat?depth=1&thesecats=' + title + '\') ">all articles in the category</a></ul><br/ >'
+                html+= '<ul><a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromcat?depth=0&thesecats=' + title + '\') ">all articles in the category</a></ul><br/ >'
                 return html;
               }
 
-              function unknown_page(url) {
-                return '<p></p><ul><a href="#" onClick="goto(\'http://george.freebaseapps.com/boyfriend?url=' + url + '\') ">create \'' + tab.title + '\'</a></ul><br/ >';
+              function unknown_page(url, title) {
+                return '<p></p><ul>create new topic: <a href="#" onClick="goto(\'http://george.freebaseapps.com/husband?url=' + url + '\') "> \'' + title + '\'</a></ul><br/ >';
               }
 
   </script>

@@ -164,3 +164,37 @@ A:visited {text-decoration: none; color: #2FC2EF;}
 A:active {text-decoration: none; color: #2FC2EF;}
 A:hover {text-decoration: underline;  color:#2FC2EF;}
 
+
+
+/*linegraph*/
+path.line {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+path.area {
+  fill: #e7e7e7;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.x.axis line {
+  stroke: #fff;
+}
+
+.x.axis .minor {
+  stroke-opacity: .5;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.y.axis line, .y.axis path {
+  fill: none;
+  stroke: #000;
+}
+

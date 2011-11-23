@@ -1,11 +1,11 @@
 {
     "name": "cite2",
-    "description": "edit freebase really quickly",
+    "description": "cite this page in wikipedia",
     "version": "0.1",  
     "browser_action": {
-        "default_title": "garden",
+        "default_title": "cite2",
         "default_icon": "tie.png",
-        "popup": "popup.html"
+        "popup": "temp.html"
     },
     "icons": {
     "16": "tie.png",
@@ -22,9 +22,7 @@
  "content_scripts": [
   {
     "matches": ["http://*/*"],
-    "js": ["selection.js"],
-    "run_at": "document_start",
-    "all_frames": true
+    "js": ["selection.js", "jquery.js"]
   }
  ]
 }

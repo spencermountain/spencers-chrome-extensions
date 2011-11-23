@@ -1,0 +1,21 @@
+{
+    "name": "scrape",
+    "description": "screen-scrape selected parts of the page using the omnibar",
+    "version": "0.1",  
+    "icons": {
+    "16": "tie.png",
+    "48": "tie48.png",
+    "128": "tie128.png"
+  },
+  "background_page": "background.html",
+  "permissions": [
+   "http://*/*", 
+   "https://*/*"
+ ],
+    "omnibox": { "keyword" : "cite" },    
+ "permissions": [
+        "tabs", 
+        "http://*/*", 
+        "https://*/*"
+    ]
+}

@@ -1,7 +1,0 @@
-
-
- <div>
-  <% for(var i in items){ %>
-  <div><%= items[i].title %></div> 
-  <% } %>
- </div>

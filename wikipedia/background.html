@@ -42,7 +42,7 @@
 
         function(text) {
             text = text.replace(/ /g, '_');
-            var url = "http://en.wikipedia.org/wiki/" + text;
+            var url = "http://westport.freebaseapps.com/chrome?q=" + encodeURI(text);
             return chrome.tabs.create({
                 url: url
             });

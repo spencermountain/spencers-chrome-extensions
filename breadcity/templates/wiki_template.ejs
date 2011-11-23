@@ -1,0 +1,52 @@
+
+ <style>.topicimage{float:left;}
+ img{
+ -moz-border-radius: 5px;
+        border-radius: 5px;
+        }
+ </style>
+
+
+ <table style=" width:100%; text-align:center;" >
+ <Tr>
+ <Td>
+ 
+ <table style=" left:20px; width:100px; text-align:center;" >
+  <% for(var i in days){ %>
+  
+ <Tr>
+
+    <td >
+<b><%= days[i].name %></b>
+  </td>
+  
+  <td>
+  <% for(var o in days[i].topics){ %>
+   <span style="font-size:11px;">
+     <%= days[i].topics[o].name %>
+  </span>
+  <% } %>  
+     </td>   
+      
+  </tr>
+  <tr>
+     ---
+  </tr>
+  
+  <% } %>
+ </table>
+ </td>
+ 
+ <td>
+ <div style="position:relative; float:left;width:60%">
+  <% for(var i in topics){ %>
+  
+  <span class="topic" style="width:160px; height:160px;">
+    <img src="http://www.freebase.com/api/trans/image_thumb<%= topics[i].id %>?maxwidth=150&maxheight=150&errorid=/m/0djw4wd"/>
+  </span>
+  
+  <% } %>
+</div>
+  </td>
+  </tr>
+  </table>

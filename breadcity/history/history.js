@@ -6,9 +6,9 @@ function showstats(el, d3){
               el.html(html); 
               
               var domains=get_domains(tabs)
-              console.log(domains.slice(0,5))   
               mostgraph(domains.slice(0,5)) 
               showpie(domains)
+              makelinegraph()
        })
        
 }
@@ -16,8 +16,6 @@ function showstats(el, d3){
 
 
 function get_domains(tabs){
-
-
       var tablist={};
       for(var i in tabs){
          if(tabs[i].url.match(/^chrome/)){continue;}
@@ -51,26 +49,21 @@ function get_domains(tabs){
 
 function get_history(days, callback){
 
-  if(!days){days=7;}
-  d = new Date();
-  today=d.getTime(); 
-  d.setDate(d.getDate()-days);           
-  var hours=d.getHours();
-  if(hours<5){      //make the day start at 5am  
-      d.setDate(d.getDate()-1);    
-  }
-  d.setHours(5);
-  var from=d.getTime();      
-  console.log('from = '+from);
-
-          
-          chrome.history.search({text:'', startTime:from, endTime:today, maxResults:1000}, function(tabs){
-              console.log(tabs.length +' history results')
-              
-              return callback(tabs)
-              
-
-          });
-          
+      if(!days){days=7;}
+      d = new Date();
+      var now=d.getTime(); 
+      var hours=d.getHours();
+      if(hours<5){      //make the day start at 5am  
+          d.setDate(d.getDate()-1);    
       }
+      d.setHours(5);  
+      console.log('from = '+d.getHours()+'    day='+ d.getDate());
+      var from=d.getTime();      
+          
+      chrome.history.search({text:'', startTime:from, endTime:now, maxResults:1000}, function(tabs){
+          console.log(tabs.length +' history results');              
+          return callback(tabs)
+      });
+          
+ }
  
