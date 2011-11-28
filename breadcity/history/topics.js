@@ -9,10 +9,7 @@
 	        var template_html = new EJS({url: './templates/topic_template.ejs'}).render({tabs:data});
          el.html(template_html);  
          }
-      
-	     
-	    
-	     
+      	     
 	          //make a url into a saved topic
        function keep(url, title){
            var url="http://thekeep.freebaseapps.com/uri_recon?callback=?&url="+url;     //send url to freebase	    

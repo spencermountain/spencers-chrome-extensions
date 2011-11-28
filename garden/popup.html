@@ -44,36 +44,38 @@
       //wikipedia
       if (tab.url.match(/wikipedia\.org\/wiki/)) {
         if (tab.url.match(/wikipedia\.org\/wiki\/Category/)) {
-          html = wpcat(tab.url, title);
+         return output(wpcat(tab.url, title));
         } else {
-          html = wppage(tab.url, title);
+          return output(wppage(tab.url, title));
         }
       }
       //freebase
-      if (tab.url.match(/freebase\.com\/view/)) {
-        html = freebase(tab.url, title);
+      if (tab.url.match(/freebase\.com\/(view|edit)/)) {
+       return output(freebase(tab.url, title));
       }
       //dmoz
       if (tab.url.match(/dmoz\.org/)) {
-        html = dmoz(tab.url, title);
+        return output(dmoz(tab.url, title));
       }
 
 
       //make a url into a saved topic
       var url = "http://thekeep.freebaseapps.com/uri_recon?callback=?&url=" + encodeURI(tab.url); //send url to freebase
       $.getJSON(url, function(data) {
-        console.log(data);
         if (data.id) {
           var html = '<h3><img src="http://freebase.com/favicon.ico" style="width:15px;height:15px;"/ >Freebase</h3>' 
-          html+= '<ul> edit <a href="#" onClick="goto(\'http://freebase.com/view/' + data.id + '\') "> ' + data.name + '</a></ul><br/ >';
+          html+= '<ul>'
+          html+=' edit <a href="#" onClick="goto(\'http://freebase.com/view/' + data.id + '\') "> ' + data.name + '</a><br/ >';          
+          html+= '<a href="#" onClick="goto(\'http://aliases.freebaseapps.com/find' + data.id + '\') ">add aliases</a><br/ >';           
+          html+='</ul>'     
         }else{
          html = unknown_page(tab.url, title);
         }
-        document.body.innerHTML = '<p></p>' + html + document.body.innerHTML; //prepend given html
+       return output(html)
       });
-
-
-      document.body.innerHTML = '<p></p>' + html + document.body.innerHTML; //prepend given html
+      
+      
+     
 
     });
 
@@ -81,6 +83,9 @@
 
   });
 
+function output(html){
+ document.body.innerHTML = '<p></p>' + html + document.body.innerHTML; //prepend given html
+}
           function goto(url) {
             chrome.tabs.getSelected(null, function(tab) {
               chrome.tabs.update(tab.id, {
@@ -102,13 +107,19 @@
 
               function freebase(url, title) {
                 var id = parseUri(url).path;
-                id = id.replace('/view', '');
+                id = id.replace(/\/(edit|view)/, '');
                 id = id.replace(/\/\-.*?/, '');
                 var html='';
                 html +='<h3><img src="http://freebase.com/favicon.ico" style="width:15px;height:15px;"/ >freebase</h3>'
-                html+='<ul>'
-                html+= '<a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromtype?type=' + id + '\') ">topics on this page</a><br/ >'
-                html+='</ul>';
+                if(id.match(/\/(en|m)\/.{4}/)){
+                  html+='<ul>'             
+                  html+= '<a href="#" onClick="goto(\'http://freebase.com/view' + id + '\') ">edit on freebase</a><br/ >';      
+                  html+= '<a href="#" onClick="goto(\'http://keep.spencermountain.user.dev.freebaseapps.com/nicewp?id=' + title + '\') ">edit on wikipedia</a><br/ >';                                
+                  html+= '<a href="#" onClick="goto(\'http://aliases.freebaseapps.com/find' + id + '\') ">add wikipedia aliases</a><br/ >';                  
+                  html+= '<a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromtype?type=' + id + '\') ">manage topics on connecting to '+title+'</a><br/ >';      
+                  html+='</ul>';
+                }
+                else{alert('type '+id)}
                 return html;
               }
 
@@ -116,12 +127,14 @@
 
               function wppage(url, title) {
                 var title = url.replace(/.*?wikipedia.org\/wiki\//, '');
+                var id=mqlkey_quote(title);
                 var html= '<h3><img src="http://en.wikipedia.org/favicon.ico" style="width:15px;height:15px;"/ >Wikipedia</h3>'
                 html+='<ul>'
                 html+= '<a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromarticlelinks?article=' + title + '\') ">all links on this page</a><br/ >'
                 html+= '<a href="#" onClick="goto(\'http://garden.freebaseapps.com/frominlinks?article=' + title + '\') ">all links going to this page</a><br/ >';
                 html+= '<a href="#" onClick="goto(\'http://garden.freebaseapps.com/frominlist?article=' + title + '\') ">parse a bulleted list</a><br/ >';
                 html+= '<a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromtable?url=' + url + '\') ">parse a html table</a><br/ >';
+                html+= '<a href="#" onClick="goto(\'http://aliases.freebaseapps.com/find' + id + '\') ">add aliases</a><br/ >';                
                 html+='</ul>'
                 return html;
               }
@@ -130,7 +143,8 @@
                 var title = url.replace(/.*?wikipedia.org\/wiki\//, '');
                 var depth = 1;
                 var html ='<h3><img src="http://en.wikipedia.org/favicon.ico" style="width:15px;height:15px;"/ >Wikipedia</h3>'
-                html+= '<ul><a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromcat?depth=0&thesecats=' + title + '\') ">all articles in the category</a></ul><br/ >'
+                html+= '<ul><a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromcat?depth=0&thesecats=' + title + '\') ">garden articles in this category</a></ul><br/ >'
+                html+= '<ul><a href="#" onClick="goto(\'http://garden.freebaseapps.com/fromcat?depth=1&thesecats=' + title + '\') ">..and 1 sub-category</a></ul><br/ >'
                 return html;
               }
 

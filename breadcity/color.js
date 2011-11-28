@@ -3,7 +3,7 @@
 $(document).ready(function(){
 var d = new Date();
 var hour=d.getHours();
-var hour=parseInt($(this).val());
+//var hour=parseInt($(this).val());
 
 //defaults
 var hue=217;
@@ -23,7 +23,7 @@ else if(hour>18){ //between 6pm to 9 go from 50 to 20
 }
 else{darkness=noon;} 
 
-console.log(darkness);
+console.log('hour is'+hour+'darkness:'+darkness);
 $("body").css("background" , 'hsl('+hue+','+niceness+'%,'+darkness+'%)');
 
 });
