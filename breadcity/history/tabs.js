@@ -26,24 +26,55 @@
              count++;
              if(count<tabs.length && count<250){counttab(count);}//recurse
              else{
-                return render(tabs, el)
+                return getmetas(tabs, el)
              }
            })
         }        
 })
 }       
 
+
+function getmetas(tabs, el){
+  tabs=_.reject(tabs, function(t){return t.url.match(/chrome/) }  )
+  var all=[];
+  for(var i in tabs){ 
+    chrome.tabs.sendRequest(tabs[i].id, {greeting: "hello", id:tabs[i].id, url:tabs[i].url, count:tabs[i].url.count, domain:tabs[i].domain}, function(response) {
+      console.log(response.data);     
+      all.push(response.data);
+      console.log(all.length+'   '+tabs.length)
+      if(all.length==tabs.length){
+        console.log('done')
+        render(all, el)
+      }
+    })    
+  }
+}
+
+
+
 function render(tabs, el){
+console.log('render')
+console.log(tabs)
 
-	     var obj={
-             tabs:tabs,
-             duplicates:null,
-             multi:null,
-           };
-       var html= new EJS({url: './templates/tabs_template.ejs'}).render(obj);
 
-       el.html(html);
-
+    var all={name:"all",
+    children:[]
+    }
+    var domains=_.pluck(tabs, "domain")
+    for(var i in domains){
+      var domain={name:domains[i],
+      children:[]
+      }
+      for(var o in tabs){
+         if(tabs[o].domain && tabs[o].domain==domains[i]){
+           domain.children.push({name:tabs[o].title, size:tabs[o].count, id:tabs[o].id, image:tabs[o].image})
+         }
+       }
+       all.children.push(domain)
+    }
+    
+    console.log(all);
+treemap(all, el);
 }
  
  

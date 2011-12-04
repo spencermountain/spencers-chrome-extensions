@@ -198,3 +198,13 @@ path.area {
   stroke: #000;
 }
 
+.cell{
+  border: solid 1px white;
+  line-height:90%
+  overflow: hidden;
+  position: absolute;
+  text-indent: 12px;
+  color:white;
+  font-weight:bold;
+  font-size:20px;
+  }

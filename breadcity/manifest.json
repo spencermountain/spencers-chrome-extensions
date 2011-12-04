@@ -1,8 +1,15 @@
 {
   "name": "Bread city",
-  "version": "0.1",
+  "version": "0.3",
   "chrome_url_overrides": {
     "newtab": "home.html"
   },
-  "permissions": ["tabs", "history","chrome://favicon/","geolocation","management"]
+  "permissions": ["tabs", "history","chrome://favicon/","management"], 
+  "content_scripts": [
+  {
+    "matches": ["http://*/*"],
+    "js": ["/lib/jquery.js","send_metas.js"]
+  }
+ ]
 }
+

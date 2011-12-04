@@ -1,9 +1,11 @@
 function showslideshow(el){
 
-get_topics(20, function(topics){
-
+  get_topics(20, function(topics){
+     
+     if(topics.length<4){return}
       var i=0;
         var refreshId = setInterval(function() {
+          if(!topics[i]){i=0;}
           $(el).html(topics[i].name);
            gettopic(topics[i].id, console.log)
            console.log(topics[i].name)

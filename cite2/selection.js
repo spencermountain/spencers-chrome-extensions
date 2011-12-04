@@ -31,18 +31,11 @@ alert('hit')
 */
 
 
-chrome.extension.onConnect.addListener(function(port) {
-  port.onMessage.addListener(function(msg) {
-    port.postMessage({counter: msg.counter+1});
-  });
-});
-
 chrome.extension.onRequest.addListener(
-  function(request, sender, sendResponse) {
-  
+  function(request, sender, sendResponse) {  
   var metas=document.getElementsByTagName("meta");
     sendResponse({lk:776, metas: metas })
-    
+    console.log(metas);
     }
   );
  
