@@ -1,45 +1,67 @@
 
-      function showtabs(el){
 
-  //get open tabs
+function startuptab(){
+
 	    chrome.windows.getAll({ populate: true }, function(windowlist) {	    
-      var tabs=[]
+      var count=0;
 	       for(var i in windowlist){
 	         for(var o in windowlist[i].tabs){
-    	         if(windowlist[i].tabs.url=="chrome://newtab"){
-    	           if(windowlist[i].tabs.selected){
-      	           chrome.tabs.remove(windowlist[i].tabs.id, function(){})
-      	           }
-      	           continue;
-    	         }
-	             var parsed=parseUri(windowlist[i].tabs[o].url);
-	             windowlist[i].tabs[o].favicon='chrome://favicon/http://'+parsed.host;
-	             windowlist[i].tabs[o].domain=getdomain(windowlist[i].tabs[o].url);
-	             tabs.push(windowlist[i].tabs[o])
-	         }
-        }
+                   //close other hometabs
+               if( windowlist[i].tabs[o].selected == false){
+                  if( windowlist[i].tabs[o].url== 'chrome://newtab/'){
+                       closetab(windowlist[i].tabs[o].id);
+                       }
+                       else{
+                         count++;
+                       }
+                   }
+             }
+          }
+          $("#tabshow").html('current<br/><span class="number">'+count+'</span><br/>tabs')
+       });
+}
+
+
+    //current tabs
+      function showtabs(){
+      //get open tabs
+	        chrome.windows.getAll({ populate: true }, function(windowlist) {	    
+          var tabs=[]
+	           for(var i in windowlist){
+	             for(var o in windowlist[i].tabs){        
+	                 tabs.push(windowlist[i].tabs[o])
+	             }
+            }
+        generic_treemap(tabs);       
+        })
+    }       
+
+function generic_treemap(tabs){
         var count=0;
         counttab(count);        
         function counttab(i){
-           chrome.history.getVisits({url: tabs[count].url}, function(visits){
-             tabs[count].count=visits.length;
-             count++;
-             if(count<tabs.length && count<250){counttab(count);}//recurse
-             else{
-                return getmetas(tabs, el)
-             }
+           chrome.history.getVisits({url: tabs[i].url}, function(visits){
+             tabs[i].count=visits.length; 
+	           var parsed=parseUri(tabs[i].url);	        
+             tabs[i].favicon='chrome://favicon/http://'+parsed.host;
+	           tabs[i].domain=getdomain(tabs[i].url);
+               count++;
+               if(count<tabs.length && count<250){counttab(count);}//recurse
+               else{
+                  return render(tabs)
+               }
            })
-        }        
-})
-}       
+        } 
+}
 
 
-function getmetas(tabs, el){
+function getmetas(tabs){
+ // return render(tabs,el);
+
   tabs=_.reject(tabs, function(t){return t.url.match(/chrome/) }  )
   var all=[];
   for(var i in tabs){ 
     chrome.tabs.sendRequest(tabs[i].id, {greeting: "hello", id:tabs[i].id, url:tabs[i].url, count:tabs[i].url.count, domain:tabs[i].domain}, function(response) {
-      console.log(response.data);     
       all.push(response.data);
       console.log(all.length+'   '+tabs.length)
       if(all.length==tabs.length){
@@ -53,9 +75,6 @@ function getmetas(tabs, el){
 
 
 function render(tabs, el){
-console.log('render')
-console.log(tabs)
-
 
     var all={name:"all",
     children:[]
@@ -67,14 +86,18 @@ console.log(tabs)
       }
       for(var o in tabs){
          if(tabs[o].domain && tabs[o].domain==domains[i]){
-           domain.children.push({name:tabs[o].title, size:tabs[o].count, id:tabs[o].id, image:tabs[o].image})
+         //reduce maximum
+           if(tabs[o].count>20){
+             tabs[o].count=20;
+           }
+           domain.children.push(tabs[o])
          }
        }
        all.children.push(domain)
     }
     
     console.log(all);
-treemap(all, el);
+treemap(all);
 }
  
  
@@ -86,6 +109,15 @@ treemap(all, el);
     return domain;
  }
  
+ 
+ 	 function closetab(tabId) {
+        try {
+          chrome.tabs.remove(tabId, function() {});
+        } catch (e) {
+          alert(e);
+        }
+         // location.reload();
+      } 
  
    /*     
 

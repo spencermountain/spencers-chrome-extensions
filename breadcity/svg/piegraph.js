@@ -35,7 +35,7 @@ function showpie(all){
       .attr("text-anchor", "middle")
       .attr("fill", "white")
       .attr("display", function(d) { return d.value > .15 ? null : "none"; })
-      .text(function(d, i) { return all[i].domain });
+      .text(function(d, i) { return all[i].domain.substr(0,15) });
   }
 
     //hover count    

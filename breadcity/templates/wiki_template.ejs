@@ -23,14 +23,14 @@
   <td>
   <% for(var o in days[i].topics){ %>
    <span style="font-size:11px;">
-     <%= days[i].topics[o].name %>
+     <a href="<%= days[i].topics[o].url %>"><%= days[i].topics[o].name %></a>
+     </br>
   </span>
   <% } %>  
      </td>   
       
   </tr>
   <tr>
-     ---
   </tr>
   
   <% } %>

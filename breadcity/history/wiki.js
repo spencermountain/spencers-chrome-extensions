@@ -1,6 +1,6 @@
 
 
-function get_wiki(){
+function get_wiki(days){
       get_topics(days, function(topics){
              //collect by day..
              var days=[]

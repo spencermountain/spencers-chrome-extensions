@@ -202,9 +202,20 @@ path.area {
   border: solid 1px white;
   line-height:90%
   overflow: hidden;
+  overflow-y:hidden;
+  overflow-x:hidden;
   position: absolute;
   text-indent: 12px;
   color:white;
   font-weight:bold;
-  font-size:20px;
+  font-size:15px;
+  opacity:0.6
+  }
+  .cell:hover{
+      opacity:0.9;
+      background:steelblue;
+  }
+  
+  .number{
+    font-size:44px;
   }

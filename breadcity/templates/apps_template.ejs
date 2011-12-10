@@ -1,12 +1,12 @@
 
 
- <table style="width:100%; text-align:center;opacity:0.5" id="apps">
+ <table style="vertical-align:center; width:100%; text-align:center; opacity:0.5" id="apps">
  <Tr>
   <% for(var i in apps){ %>
   
-  <% if(i%2==0){ %>
-   </tr><tr>
-  <% } %>
+        <% if(i%3==0){ %>
+         </tr><tr>
+        <% } %>
   
         <td >
             <a href="<%= apps[i].appLaunchUrl %>" >

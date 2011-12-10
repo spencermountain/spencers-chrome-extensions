@@ -8,12 +8,18 @@ function showstats(el, d3){
               var domains=get_domains(tabs)
               mostgraph(domains.slice(0,5)) 
               showpie(domains)
-              makelinegraph()
+              //makelinegraph()
+              timegraph(tabs)
        })
        
 }
 
-
+function todayshow(){
+  get_history(1, function(tabs){
+    var html='today <br/><span class="number" style="">'+tabs.length+'</span> <br/> pages'
+    $("#todayshow").html(html)
+  })
+}
 
 function get_domains(tabs){
       var tablist={};
