@@ -1,0 +1,8 @@
+{
+  "name": "Recent",
+  "description" : "reopen recent tabs causally, from the taskbar",
+  "version": "1.0",
+  "background_page": "background.html",
+  "permissions":["tabs","history"],
+  "omnibox": { "keyword" : "recent" }
+}
