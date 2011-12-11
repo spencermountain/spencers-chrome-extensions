@@ -64,24 +64,6 @@ chart.append("svg:line")
 
 }
 
-function getgoogles(tabs){
-      //get google searches            
-        searches=[]
-         for(var o in tabs){
-           if(tabs[o].url.match(/google\..*?\/search/)){
-             var parsed=parseUri(tabs[o].url);
-             var q=parsed.queryKey.q;
-             q=decodeURI(q);
-             if(q){
-              tabs[o].q=q;
-              searches.push(q);
-             }
-            }     
-          }
-        searches=unique(searches);
-        searches.sort(function(a,b){return a.length -b.length;})
-     return searches;
-}
 
 
 

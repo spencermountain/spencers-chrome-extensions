@@ -13,6 +13,7 @@ function get_wiki(days){
              console.log(days)
         var template_html = new EJS({url: './templates/wiki_template.ejs'}).render({days:days, topics:topics});
          $('#stage').html(template_html);
+            weekgraph();
         setTimeout("removeblanks()",1000);
       })
 

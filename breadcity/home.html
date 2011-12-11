@@ -26,6 +26,8 @@
     </script>
     <script src="./history/group.js" type="text/javascript">
     </script>
+     <script src="./history/domain.js" type="text/javascript">
+    </script>
     <script src="apps.js" type="text/javascript">
     </script>
    <script src="./history/showimages.js" type="text/javascript">
@@ -44,6 +46,8 @@
     <script src="./svg/timegraph.js" type="text/javascript">
     </script>
    <script src="./svg/treemap.js" type="text/javascript">
+    </script>
+    <script src="./svg/weekgraph.js" type="text/javascript">
     </script>
     <link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
     <style>body{font-family: 'Cabin', sans-serif;}</style>
@@ -64,11 +68,11 @@
           })          
         }, 2000); //60000ms equals 1 minute
 
-var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 8000);
+var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 238000);
 
   $(document).click(function() {
     window.clearTimeout(slideshow_timeout);
-    slideshow_timeout = window.setTimeout(function(){showslideshow()}, 18000);
+    slideshow_timeout = window.setTimeout(function(){showslideshow()}, 238000);
     console.log('click');
   })
   
@@ -84,14 +88,16 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 8000);
         });        
        $("#appshow").click(function() {
           showapps($("#stage"));
-        });
-        
+        });        
+        $("#findshow").click(function() {
+          show_domains();
+        });        
        $("#todayshow").click(function() {
           showstats($("#stage"));
         });
         
       todayshow();
-      showimages();
+      showimages();  setTimeout("removeblanks()",1000);
       startuptab();
       startapps()
 
@@ -111,6 +117,11 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 8000);
       }
     </script>
     <style>
+     img{
+       -moz-border-radius: 5px;
+        border-radius: 5px;
+        }
+        
       svg { font: 10px sans-serif; shape-rendering: crispEdges;
       }
 
@@ -128,17 +139,6 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 8000);
     -moz-animation-name: slidein;
   }
   
-  @-moz-keyframes slidein {
-    from {
-      left: 100%;
-      width: 300%
-    }
-    
-    to {
-      left: 0%;
-      width: 100%;
-    }
-  }
       .foothover{
         opacity:0.7;
          background:grey;
@@ -146,6 +146,13 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 8000);
         -webkit-transition-timing-function: ease-out;
         -webkit-transition-duration: 500ms;
       }
+      
+      @font-face {
+  font-family: 'Cabin';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Cabin Regular'), local('Cabin-Regular'), url('./cabin.woff') format('woff');
+}
     </style>
   </head>
   
@@ -181,6 +188,9 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 8000);
                 <span class="foot" id="tabshow">tabs</span>
             </td>
             <td>
+                 <span class="foot" id="findshow">recent</span>
+            </td>
+             <td>
                  <span class="foot" id="appshow">apps..</span>
                    <a href="#" id="show">show</a>
             </td>

@@ -64,7 +64,9 @@ function get_history(days, callback){
       }
       d.setHours(5);  
       console.log('from = '+d.getHours()+'    day='+ d.getDate());
-      var from=d.getTime();      
+      days=days*-1;
+      var from=d.setTime(days);
+      from=d.getTime();      
           
       chrome.history.search({text:'', startTime:from, endTime:now, maxResults:1000}, function(tabs){
           console.log(tabs.length +' history results');              
