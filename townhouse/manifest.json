@@ -1,6 +1,6 @@
 {
-  "name": "Bread city",
-  "version": "0.3",
+  "name": "Townhouse",
+  "version": "1.0",
   "chrome_url_overrides": {
     "newtab": "home.html"
   },

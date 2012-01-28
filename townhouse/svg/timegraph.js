@@ -6,7 +6,7 @@ function timegraph(tabs){
        var histogram=[]
        for(var i =tabs[0].lastVisitTime; i<=tabs[tabs.length-1].lastVisitTime; i=i+unit){
          var within=_.filter(tabs, function(tab){ return tab.lastVisitTime<=i && tab.lastVisitTime>=i-unit  });
-         var googles=getgoogles(within);        
+         var googles=[];//getgoogles(within);        
          var domain=top_domain(within);
          histogram.push({date: i, count:within.length, tabs:within, googles:googles, domain:domain })
        }
@@ -21,12 +21,14 @@ var w = parseInt(width/histogram.length),
 var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
 var y = d3.scale.linear().domain([0, d3.max(data, function(datum) { return datum.count; })]). rangeRound([0, height]);
     
-
+console.log($("#timegraph").html())
 var chart = d3.select("#timegraph")
     .append("svg:svg")
     .attr("class", "chart")
     .attr("width", w * data.length - 1)
     .attr("height", h);
+
+console.log(chart)
 
 chart.selectAll("rect")
     .data(data)

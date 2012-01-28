@@ -50,7 +50,14 @@
     <script src="./svg/weekgraph.js" type="text/javascript">
     </script>
     <link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
-    <style>body{font-family: 'Cabin', sans-serif;}</style>
+    <style>
+    body{font-family: 'Cabin', sans-serif;}
+    #footer{
+    position:fixed;
+    left:0px;
+    bottom:0px;
+}
+</style>
     <link type="text/css" rel="stylesheet" href="cool.css" />
     <script>
    $(document).ready(function() {
@@ -62,11 +69,11 @@
         
         var refreshId = setInterval(function() {
           chrome.tabs.getSelected(null,function(tab){
-             if(tab.id!=homeid ){
+             if(tab.id!=homeid && tab.status=="complete"){
                 chrome.tabs.remove(homeid, function(){})
             }          
           })          
-        }, 2000); //60000ms equals 1 minute
+        }, 60000); //60000ms equals 1 minute
 
 var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 238000);
 
@@ -161,22 +168,14 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 238000);
     </div>      
 
     
-    <table id="showlist" style="position:absolute; width:100%; height:100%; top:0px; font-size:23px">
-    
-    <Tr style="height:90%; overflow-y:none;" >
-      <Td >
-      <div id="stage" style="vertical-align:center;" >
+ 
+      <div id="stage" style="position:absolute; width:100%; height:90%; top:0px; font-size:23px; vertical-align:center;" >
         hi
       </div>
       
     <span id="images"></span>
-      </td>
-    </tr>
-    
-      <Tr>
-      <td>
       
-        <table style="width:100%; a.color:white;">
+        <table style="width:100%; height:100px; a.color:white;" id="footer">
           <tr>
             <td>
                <span class="foot" id="todayshow"></span>
@@ -197,8 +196,5 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 238000);
           </tr>
           </table>
       
-      </td>
-      </tr>
-    </table>
     
   </body>

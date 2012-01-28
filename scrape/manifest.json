@@ -12,10 +12,11 @@
    "http://*/*", 
    "https://*/*"
  ],
-    "omnibox": { "keyword" : "cite" },    
- "permissions": [
-        "tabs", 
-        "http://*/*", 
-        "https://*/*"
-    ]
+    "omnibox": { "keyword" : "scrape" },    
+    "content_scripts": [
+      {
+        "matches": ["http://*/*"],
+        "js": ["jquery.js","scraper_script.js"]
+      }
+     ]
 }
