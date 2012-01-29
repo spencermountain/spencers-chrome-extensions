@@ -1,14 +1,14 @@
 
-<table style="height:80%; width:100%;vertical-align:top;">
+<table style="position:absolute; vertical-align:center; top:200px; left:25%">
   <tr>
   <Td>
   
   
-         <table id="domainlist" style="height:80%; overflow-y:scroll;"> 
+         <table id="domainlist" style=" overflow-y:scroll;"> 
           <% for(var i in tabs){ %>
             <tr>
              <td>  
-                <img style="width:15px; height:15px;" src="<%= tabs[i].favicon %>" / >
+                <!--<img style="width:15px; height:15px;" src="<%= tabs[i].favicon %>" / >-->
                 <a href="#" style="font-size:<%= tabs[i].font %>;" class="domain"> <%= tabs[i].domain %></a>  </br> 
                   <div class="sites" id="<%= tabs[i].domain %>" style="display:none; position:relative; left:100px;">      
                     <% for(var o in tabs[i].sites){ %>
@@ -22,6 +22,7 @@
          
          
          </td>
+         <!--
          <td>
            <% for(var i in googles){ %>
                 <% if (i< 20){ %>
@@ -32,6 +33,10 @@
             <% } %>
             <a href="#" id="moregoogles">show more googles..</a>
          </td>
+         
+         -->
+         </tr>
+         <tr style="height:150px;">
          </tr>
          </table>
  
