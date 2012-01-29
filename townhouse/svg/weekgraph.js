@@ -1,8 +1,7 @@
 
-function weekgraph(tabs){
+function weekgraph(){
 
   get_history(7, function(tabs){
-
        tabs=tabs.reverse();
        var start=tabs[0].lastVisitTime;
        var unit=300000;//5minutes
@@ -32,7 +31,6 @@ function weekgraph(tabs){
     for(var i in byday){
       data.push(byday[i])
     }
-console.log(data)
 
 var days={
 0:{day:"sunday", colour:"#84B154"},

@@ -1,8 +1,8 @@
 function showpie(all){
 
   var data=_.pluck(all.slice(0,10),'count')
-  var w = 300,
-      h = 300,
+  var w = 75,
+      h = 75,
       r = Math.min(w, h) / 2,
       color = d3.scale.category20(),
       donut = d3.layout.pie();
@@ -29,13 +29,14 @@ function showpie(all){
       .attrTween("d", maketitle);
 
   function maketitle(b){
-  arcs.append("svg:text")
+ /* arcs.append("svg:text")
       .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
       .attr("dy", ".35em")
       .attr("text-anchor", "middle")
       .attr("fill", "white")
       .attr("display", function(d) { return d.value > .15 ? null : "none"; })
       .text(function(d, i) { return all[i].domain.substr(0,15) });
+      */
   }
 
     //hover count    

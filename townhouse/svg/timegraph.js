@@ -21,14 +21,13 @@ var w = parseInt(width/histogram.length),
 var x = d3.scale.linear().domain([0, data.length]).range([0, width]);
 var y = d3.scale.linear().domain([0, d3.max(data, function(datum) { return datum.count; })]). rangeRound([0, height]);
     
-console.log($("#timegraph").html())
+console.log(data)
 var chart = d3.select("#timegraph")
     .append("svg:svg")
     .attr("class", "chart")
     .attr("width", w * data.length - 1)
     .attr("height", h);
 
-console.log(chart)
 
 chart.selectAll("rect")
     .data(data)
@@ -47,7 +46,7 @@ chart.selectAll("rect")
 chart.selectAll("rect")
    .on("click", function(s,i) { generic_treemap(histogram[i].tabs)})
    .append("svg:title")
-   .text(function(s,i) { return histogram[i].count +'  '+histogram[i].domain  });
+   .text(function(s,i) { var h=new Date(); h.setTime(histogram[i].date); return h.getHours()+':'+h.getMinutes()+'   '+histogram[i].count +'  '+histogram[i].domain  });
 
 chart.selectAll("rect")
       .append("svg:text")

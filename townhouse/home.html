@@ -49,8 +49,7 @@
     </script>
     <script src="./svg/weekgraph.js" type="text/javascript">
     </script>
-    <link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
-    <style>
+   <style>
     body{font-family: 'Cabin', sans-serif;}
     #footer{
     position:fixed;
@@ -116,6 +115,15 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 238000);
           $(this).removeClass("foothover");
         }
       );
+
+//bottom pie graph
+        get_history(1, function(tabs){
+              var domains=get_domains(tabs)
+              showpie(domains)
+              timegraph(tabs)
+       })
+
+
 
       });
       
@@ -187,14 +195,15 @@ var slideshow_timeout = window.setTimeout(function(){showslideshow()} , 238000);
                 <span class="foot" id="tabshow">tabs</span>
             </td>
             <td>
-                 <span class="foot" id="findshow">recent</span>
+                 <span class="foot" id="findshow">recent<div id="piegraph"></div></span>
             </td>
              <td>
                  <span class="foot" id="appshow">apps..</span>
                    <a href="#" id="show">show</a>
+      
+    <input id="hour"/>
             </td>
           </tr>
           </table>
-      
-    
+
   </body>
