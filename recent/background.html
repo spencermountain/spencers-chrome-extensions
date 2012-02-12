@@ -42,7 +42,7 @@ function get_history(text, suggest){
           
       chrome.history.search({text:text, startTime:from, endTime:now, maxResults:10}, function(tabs){
       
-      resetDefaultSuggestion(' sdf')
+      resetDefaultSuggestion('')
       
           console.log(tabs.length +' history results');      
           console.log(tabs)

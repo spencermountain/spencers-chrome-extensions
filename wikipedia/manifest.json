@@ -3,5 +3,10 @@
   "description" : "search wikipedia casually, from the taskbar",
   "version": "1.0",
   "background_page": "background.html",
-  "omnibox": { "keyword" : "wikipedia" }
+  "omnibox": { "keyword" : "wikipedia" },  
+  "icons": {
+    "16": "icon.png",
+    "48": "icon48.png",
+    "128": "icon128.jpg"
+  }
 }

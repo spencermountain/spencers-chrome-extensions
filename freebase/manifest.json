@@ -3,5 +3,10 @@
   "description" : "query freebase in natural language from the taskbar - type 'freebase capital of Italy",
   "version": "1.0",
   "background_page": "background.html",
-  "omnibox": { "keyword" : "freebase" }
+  "omnibox": { "keyword" : "freebase" },  
+  "icons": {
+    "128": "icon.png",
+    "16": "icon.png",
+    "48": "icon.png"
+  }
 }
