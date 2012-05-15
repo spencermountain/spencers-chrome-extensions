@@ -1,0 +1,9 @@
+{
+    "name": "Fatcat",
+    "description": "make wikipedia categories cooler",
+    "version": "1.1",
+    "content_scripts": [ { "matches": ["http://en.wikipedia.org/wiki/*"],
+    "js": ["./jquery.js","content_script.js"]
+    } ]
+
+}

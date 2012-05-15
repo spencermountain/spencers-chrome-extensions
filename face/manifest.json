@@ -1,0 +1,19 @@
+{
+  "name": "Whole face",
+  "description" : "its your only face. hack your face.",
+  "version": "1.0",
+    "icons": {
+      "16": "blue.jpg"
+  },
+   "permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+   "content_scripts": [
+  {
+    "matches": ["http://*/*"],
+    "js": ["jquery.js","content_script.js"],
+    "all_frames": true
+  }
+ ]
+}

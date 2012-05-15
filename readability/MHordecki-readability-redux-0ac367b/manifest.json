@@ -1,0 +1,17 @@
+{
+    "name": "Simple english",
+    "version": "1.3.4",
+    "description": "Make hard english easy to read",
+    "background_page": "redux/background.html",
+    "browser_action": { "default_icon": "icons/readability-toolbar.png" },
+    "icons": {
+      "16": "icons/blue.jpg",
+      "48": "icons/blue.jpg",
+      "128": "icons/blue.jpg"
+    },
+    "permissions": [ "tabs", "http://*/*", "https://*/*"],
+    "options_page": "redux/options.html",
+    "content_scripts": [ { "matches": ["http://*/*", "https://*/*", "file://*/*"],
+    "js": ["simple/jquery.js","redux/contentscript.js", "simple/simple.js"]
+    } ]
+}
