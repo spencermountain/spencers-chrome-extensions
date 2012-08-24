@@ -1,0 +1,9 @@
+{
+    "name": "Freebase-quickie",
+    "description": "click on a wikipedia link to curate it on freebase",
+    "version": "1.1",
+    "content_scripts": [ { "matches": ["http://en.wikipedia.org/wiki/*"],
+    "js": ["./jquery.js","content_script.js","./suggest.js"]
+    } ]
+
+}
