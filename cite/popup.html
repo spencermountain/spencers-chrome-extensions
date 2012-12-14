@@ -1,6 +1,6 @@
 
         <script>
-            // This callback function is called when the content script has been 
+            // This callback function is called when the content script has been
             // injected and returned its results
 
             function onPageInfo(o) {
@@ -12,7 +12,6 @@
                 var bg = chrome.extension.getBackgroundPage();
                 bg.getPageInfo(onPageInfo);
                 window.close();
-                
             }
         </script>
 

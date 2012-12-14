@@ -1,0 +1,375 @@
+
+<html>
+<head>
+	<style>
+	body{
+		font-family:"Helvetica","Univers","Helvetica Neue",arial,helvetica,sans-serif;
+		font-size:22px;
+		color:#808080;
+		text-align:center;
+
+	}
+	a{color:steelblue;
+	}
+	.cooltextarea{width:80%;
+		height:80%;
+		text-align:left;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+		border:solid grey 1px ;
+	}
+
+	textarea{
+		color:#666;
+		font-size:14px;
+		-moz-border-radius: 8px; -webkit-border-radius: 8px;
+		margin:5px 0px 10px 0px;
+		padding:10px;
+		height:75px;
+		width:350px;
+		border:#999 1px solid;
+		font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+		transition: all 0.25s ease-in-out;
+		-webkit-transition: all 0.25s ease-in-out;
+		-moz-transition: all 0.25s ease-in-out;
+		box-shadow: 0 0 5px rgba(81, 203, 238, 0);
+		-webkit-box-shadow: 0 0 5px rgba(81, 203, 238, 0);
+		-moz-box-shadow: 0 0 5px rgba(81, 203, 238, 0);
+	}
+
+	.valid{
+		outline:none;
+		border:#35a5e5 1px solid;
+		font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+		box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+		-webkit-box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+		-moz-box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+	}
+
+	.invalid{
+		outline:none;
+		border:#C92655 1px solid;
+		font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+		box-shadow: 0 0 5px rgba(215, 0, 0, 1);
+		-webkit-box-shadow: 0 0 5px rgba(215, 0, 0, 1);
+		-moz-box-shadow: 0 0 5px rgba(215, 0, 0, 1);
+	}
+
+	.property{
+		position:absolute;
+		z-index:4;
+		float:right;
+		-moz-border-radius: 8px; -webkit-border-radius: 8;
+		color:grey;
+		border:1px solid grey;
+	}
+
+	</style>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="./lightbox.js"></script>
+	<script src="./jsselect.js"></script>
+	<script src="./underscore.js"></script>
+	<script src="./json2.js"></script>
+	<script src="./xml.js"></script>
+	<script>
+	$(document).ready(function(){
+
+
+	// var length=0;
+	// var timeoutID = window.setInterval(function(){
+	// 	var newlength=$("#json").val().length;
+	// 	if(Math.abs(newlength-length) > 20){
+	// 		console.log('s')
+	// 		//analyze();
+	// 		length=newlength
+	// 	}
+	// }, 500);
+
+
+
+
+		$("#json").focusout(function(){
+			var stats=analyze();
+			if(stats.obj && stats.obj.length){
+				$("#json").val(JSON.stringify(stats.obj, null, 2));
+			}
+		})
+
+
+		$("#json").keyup(function(){analyze()})
+
+
+
+
+
+		$("#analyse").click(function(){
+			var stats=analyze();
+			if(stats.obj && stats.obj.length){
+				$("#json").val(JSON.stringify(stats.obj, null, 2));
+			}
+		})
+
+
+		function addfieldlogic(stats){
+			var html='';
+			for(var i in stats.fields){
+				html+='<div class="property">'
+				+'<span class="field" id="'+stats.fields[i]+'" contenteditable="true">'+stats.fields[i]+'</span>'
+				+'<a href="#" onclick="clearfield('+stats.fields[i]+')"><img style="width:20px; height:20px;" src="close.jpg"/></a>'
+				+'<br/> 5 values'
+				+'<a href="#">sort</a> '
+				+'<a href="#">filter</a>'
+				+'</div>'
+			}
+			$("#fields").html(html);
+
+			//event behaviour
+			$(".field").keyup(function(){
+				var real=$(this).attr("id");
+				var newlabel=$(this).html();
+				var obj=$("#json").html();
+				obj=JSON.parse(obj);
+				for(var i in obj){
+					for(var o in obj[i]){
+						if(o==real){
+							obj[i][newlabel]=obj[i][o];
+							delete obj[i][o];
+						}
+					}
+				}
+				$("#json").val(JSON.stringify(obj,null,2));
+			 	analyze();
+		});
+		}
+
+
+		function analyze(){
+			var data=$("#json").val();
+			data=data.replace(/  /,' ');
+			data=data.replace(/^\s+|\s+$/, '');
+			var stats={type:null, length:0, fields:[], obj:null}
+			//first, see if its js-nice, or raw data
+			try{
+				obj=JSON.parse(data);
+				stats.obj=obj;
+				$("#json").removeClass('invalid');
+				$("#json").addClass('valid');
+				$("#error").html('')
+						//see if its an array or an object, or json
+						if(obj.length){
+								//its an array
+								stats.length=obj.length;
+								stats.type="array";
+								stats.dupes= obj.length - unique(obj).length
+								//see if its an array of objects
+								if(obj[0] && typeof obj[0]=="object"){
+									stats.fields=Object.keys(obj[0]);
+								}else{
+								handle_array(stats);
+						  	}
+							}else{
+								//its an object
+								stats.length=_.size(obj);
+								stats.type="object"
+								stats.fields=Object.keys(obj);
+							}
+				}catch(e){
+
+					//see if its trying to be json
+					if( !data.substr(0,1).match(/[\{\[]/) ){
+
+							//interpret it as raw data
+						$("#json").removeClass('valid');
+						var tsv=data.split('\n');
+						stats.length=tsv.length;
+						if(!tsv[0]){return stats;}
+						//try for a tsv or csv
+						if(tsv[0].split('\t').length>1){
+							stats.type="tsv";
+							stats.fields=[];
+						}else if(tsv[0].split(',').length>1){
+							stats.type="csv";
+							stats.fields=[];
+						}
+						else{
+							//raw list
+							stats.type="list"
+							stats.fields=[];
+						}
+						$("#json").val(JSON.stringify(tsv,null,2));
+						analyze()//recursive
+					 }else{
+					 	//invalid json
+					 	console.log('death')
+					 	console.log(e.type)
+					 	$("#json").removeClass('valid');
+					 	$("#json").addClass('invalid');
+					 	$("#error").html(e.type)
+					 }
+					}
+
+
+		//	addfieldlogic(stats);
+
+		return stats;
+	}
+
+
+
+
+
+	function handle_array(stats){
+			//render the stats
+			$("#stats").html('length: '+stats.length+', type: '+stats.type)
+			$("#length").html('<span style="font-size:10px;">length of</span> <b style="font-size:30px;">'+stats.length+'</b>')
+			$("#dupes").html('<b style="font-size:30px;">'+stats.dupes+'</b><span style="font-size:10px;">duplicates</span> ')
+
+				//render interactions
+			var html='<input id="reverse" type="button" value="reverse"/>'
+			+'<input id="unique" type="button" value="unique"/>'
+			+'<input id="map" type="button" value="map"/>'
+			+'<input id="topk" type="button" value="topk"/>'
+			$("#buttons").html(html)
+
+		$("#reverse").click(function(){
+			var stats=analyze();
+			if(stats.obj && stats.obj.length){
+				stats.obj=stats.obj.reverse();
+				$("#json").val(JSON.stringify(stats.obj, null, 2));
+				analyze()
+			}
+			else{
+				alert('couldn\'t parse the data')
+			}
+		});
+
+		$("#unique").click(function(){
+			var stats=analyze();
+			if(stats.obj && stats.obj.length){
+				stats.obj=unique(stats.obj);
+				$("#json").val(JSON.stringify(stats.obj, null, 2));
+				analyze();
+			}
+			else{
+				alert('couldn\'t parse the data')
+			}
+		});
+
+		$("#topk").click(function(){
+			var stats=analyze();
+			if(stats.obj && stats.obj.length){
+				stats.obj=topk(stats.obj);
+				$("#json").val(JSON.stringify(stats.obj, null, 2));
+				analyze();
+			}
+			else{
+				alert('couldn\'t parse the data')
+			}
+		});
+
+		$("#map").click(function(){
+			$("#mapit").toggle()
+		})
+
+		$("#runmap").click(function(){
+			var code=$("#code").val()
+			var stats=analyze();
+			if(stats.obj && stats.obj.length){
+				code='stats.obj.map(function(v,i){'+code+'})'
+					eval(code)
+					console.log(stats.obj)
+				$("#json").val(JSON.stringify(stats.obj, null, 2));
+			}
+			else{
+				alert('couldn\'t parse the data')
+			}
+		});
+		console.log('f')
+	}
+
+
+
+
+
+});
+
+function clearfield(){
+	var obj=$("#json").html();
+	obj=JSON.parse(obj);
+	for(var i in obj){
+		for(var o in obj[i]){
+			if(o==real){
+				obj[i][newlabel]=obj[i][o];
+				delete obj[i][o];
+			}
+		}
+	}
+}
+
+ //remove duplicates from array
+ function unique(x) {
+   var newArray=new Array();
+    label:for(var i=0; i<x.length;i++ ){
+      for(var j=0; j<newArray.length;j++ ){
+          if(newArray[j]==x[i])
+          continue label;
+        }
+        newArray[newArray.length] = x[i];
+      }
+    return newArray;
+  }
+
+function topk(myArray){
+	var newArray = [];
+	var freq = {};
+	//Count Frequency of Occurances
+	var i=myArray.length-1;
+	for (var i;i>-1;i--)
+	{
+	  var value = myArray[i];
+	  freq[value]==null?freq[value]=1:freq[value]++;
+	}
+	//convert to sortable array
+	for (var value in freq)
+	{
+	  newArray.push(value);
+	}
+	return newArray.sort(function(a,b){return freq[b]-freq[a];}).map(function(v){return {value:v, count:freq[v]}});
+}
+
+</script>
+</head>
+<body>
+	<span id="fields"></span>
+
+		<!--<input id="selector" value="string"/>
+ <input id="click" type="button" value="pluck"/>
+	<input id="analyze" type="button" value="analyze"/> -->
+	<span id="buttons"></span>
+	<br/>
+
+<table style="width:80%; text-align:center;">
+	<tr>
+		<td id="length"></td>
+		<td id="dupes"></td>
+		<td></td>
+	</tr>
+</table>
+
+	<div id="mapit" style="color:grey; display:none;">
+		map(v, i){<br/>
+	<textarea id="code" style="width:400px; height:120px; border:1px solid grey; border-radius:5px; ">
+		return v+"yyyy"
+	</textarea>
+	}
+	<input id="runmap" type="button" value="run"/>
+</div>
+
+<div id="error" style="left:200px; color:grey; font-size:12px; font-family:Courier New;"></div>
+
+	<textarea id="json" placeholder='json here' class="cooltextarea">["lkjsdf","aaaa","bbbb","aaaa","mmmm"]</textarea>
+
+	<div id="results"></div>
+
+</body>
+</html>
