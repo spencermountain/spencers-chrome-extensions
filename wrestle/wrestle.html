@@ -101,6 +101,43 @@
 	      }
 	    });
 
+	   $("#parse_tsv").click(function() {
+	   		var tsv=$("#json").val()||'';
+	   		tsv=tsv.split('\n').map(function(v){return v.split('\t')})
+	   		$("#json").val(JSON.stringify(tsv, null, 2));
+	      var stats = analyze();
+	      if (stats.obj && stats.obj.length) {
+	        stats.obj = stats.obj.reverse();
+	        $("#json").val(JSON.stringify(stats.obj, null, 2));
+	        refresh();
+	      } else {
+	        alert('couldn\'t parse the data')
+	      }
+	    });
+
+	   $("#stringify").click(function() {
+	      var stats = analyze();
+	      if (stats.obj && stats.obj.length) {
+	        $("#json").val(JSON.stringify(stats.obj));
+	        //refresh();
+	      } else {
+	        alert('couldn\'t parse the data')
+	      }
+	    });
+
+	   	$("#toarr").click(function() {
+	      var stats = analyze();
+	      if (stats.obj && stats.obj.length) {
+	      	var arr=stats.obj.map(function(v){
+	      		return Object.keys(v).map(function(a){return v[a]})
+	      	})
+	        $("#json").val(JSON.stringify(arr),null,2);
+	        refresh();
+	      } else {
+	        alert('couldn\'t parse the data')
+	      }
+	    });
+
 	    $("#uniquearr").click(function() {
 	      var stats = analyze();
 	      if (stats.obj && stats.obj.length) {
@@ -134,6 +171,26 @@
 	    $("#analyse").click(function() {
 	      refresh();
 	    })
+
+
+	  $("#demo").click(function() {
+	    var json = [{
+	      "name": "magnolia",
+	      "headstead": true
+	    }, {
+	      "name": "katie holmes",
+	      "headstand": false
+	    }, {
+	      "name": "top gun",
+	      "headstand": false
+	    }, {
+	      "name": "oprah",
+	      "headstand": true,
+	      "jump_couch": 1
+	    }]
+	    $("#json").val(JSON.stringify(json, null, 2));
+	  })
+
 	  }
 
 
@@ -199,23 +256,6 @@ var randy= {
 
 $("#json").val(JSON.stringify(randy, null, 2))
 
-	  $("#demo").click(function() {
-	    var json = [{
-	      "name": "magnolia",
-	      "headstead": true
-	    }, {
-	      "name": "katie holmes",
-	      "headstand": false
-	    }, {
-	      "name": "top gun",
-	      "headstand": false
-	    }, {
-	      "name": "oprah",
-	      "headstand": true,
-	      "jump_couch": 1
-	    }]
-	    $("#json").val(JSON.stringify(json, null, 2));
-	  })
 
 	  //show appropriate navigation
 
@@ -227,11 +267,15 @@ $("#json").val(JSON.stringify(randy, null, 2))
 	      + '<input id="reverse" type="button" value="reverse" title="pull a louie"/>'
 	      + '<input id="compact" type="button" value="compact" title="remove nulls empty objects"/>'
 	      + '<input id="flatten" type="button" value="flatten" title="squish to one level of depth"/>'
+	      + '<input id="stringify" type="button" value="stringify" title="squish it into uglified json"/>'
+	      + '<input id="toarr" type="button" value="to array" title="loose the key names in an object"/>'
 	      + '<input id="tsv" type="button" value="output to tsv"/>'
 	    } else if (type == "object") {
-	      +'<input id="compact" type="button" value="compact" title="remove nulls empty objects"/>'
+	      html+='<input id="compact" type="button" value="compact" title="remove nulls empty objects"/>'
 	    } else {
-	      html = '<input id="demo" type="button" value="demo"/>' + '<input id="tsv" type="button" value="tsv"/>'
+	      html = '<input id="demo" type="button" value="demo"/>'
+	      + '<input id="parse_tsv" type="button" value="tsv"/>'
+	      + '<input id="sentence" type="button" value="sentences"/>'
 	    }
 	    $("#navigation").html(html)
 	    setlistners()
@@ -326,7 +370,6 @@ $("#json").val(JSON.stringify(randy, null, 2))
 	      }
 	      $("#error").html('');
 	    } catch (e) {
-	    	//alert(e)
 	      $("#json").removeClass('valid');
 	      $("#error").html('error' + JSON.stringify(e));
 
