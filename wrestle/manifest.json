@@ -2,7 +2,11 @@
   "name": "Wrestlejs",
   "description" : "whip around some data, like you own the place",
   "version": "1.0",
-  "background_page": "background.html",
+  "background": {
+    "page": "background.html",
+    "persistent": false
+  },
+  "manifest_version": 2,
   "omnibox": { "keyword" : "wrestle" },
   "app": {
       "launch": {
@@ -11,6 +15,7 @@
          "width": 1280
       }
    },
+  //"content_security_policy": "script-src 'self chrome-extension://'; object-src 'self'",
   "icons": {
     "16": "tie.png",
     "48": "tie48.png",

@@ -1,0 +1,14 @@
+{
+    "name": "Alt-up",
+    "description": "navigate up a directory of a website by pressing alt-up",
+    "version": "0.0.1",
+
+      "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+	    "js": ["./mousetrap.js","./alt_up.js"]
+    }
+  ],
+    "manifest_version":2,
+     "homepage_url": "http://path/to/homepage"
+}

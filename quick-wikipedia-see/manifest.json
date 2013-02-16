@@ -1,0 +1,17 @@
+{
+    "name": "Freebase-see",
+    "manifest_version": 2,
+    "description": "click on a wikipedia link to curate it on freebase",
+    "version": "1.1",
+    "background": {
+	    "scripts": ["./jquery.js","background.js"]
+	   },
+    "content_scripts": [
+	    {
+		    "matches": ["http://en.wikipedia.org/w*"],
+		    "js": ["./jquery.js","./content_script.js","./suggest.js", "./async.js"],
+		    "permissions": ["http://*/*"],
+		    "css":["./suggest.css"]
+	    }
+    ]
+}
