@@ -5,10 +5,13 @@
 
       "content_scripts": [
     {
-      "matches": ["http://*/*"],
+      "matches": ["<all_urls>"],
 	    "js": ["./mousetrap.js","./alt_up.js"]
     }
   ],
     "manifest_version":2,
-     "homepage_url": "http://path/to/homepage"
+     "homepage_url": "https://github.com/spencermountain/spencers-chrome-extensions/tree/master/alt-up",
+     "icons": { "16": "up.jpg",
+           "48": "up.jpg",
+          "128": "up.jpg" }
 }
