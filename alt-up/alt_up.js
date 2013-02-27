@@ -8,7 +8,7 @@ Mousetrap.bind(['alt+up'], function(e) {
     	p.path=p.path.join('/');
     	var port='';
     	if(p.port){
-    		port=':'+v.port
+    		port=':'+p.port
     	}
     	var url=encodeURI(p.protocol+'://'+p.host + port+'/'+ p.path);
     	window.location=url;
