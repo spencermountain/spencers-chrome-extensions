@@ -1,20 +1,20 @@
 {
-  "name": "Fifty",
-  "description" : "make a graph of the numbers on the page",
+  "name": "Simple english",
+  "description" : "simplify the english you are reading",
   "version": "0.1",
   "permissions": [
 		"tabs",
 		"*://*/*"
 		],
 	"content_scripts": [ {
-      "js": [ "lib/jquery.min.js", "lib/safereplace.js", "lib/d3.min.js", "lib/dates.js", "lib/knwl.js", "content.js"],
+      "js": [ "lib/jquery.min.js", "lib/safereplace.js", "data.js", "content.js"],
       "matches": [ "\u003Call_urls\u003E" ]
    } ],
   "browser_action": {
       "default_icon": {
          "19": "lib/icon.png"
       },
-      "default_title": "Graph the numbers"
+      "default_title": "Simple english"
    },
    "background": {
     "scripts": ["background.js"]
