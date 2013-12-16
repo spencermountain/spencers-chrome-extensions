@@ -51,7 +51,7 @@ $(function() {
 
     $(document).keyup(function(e) {
         console.log(e.keyCode)
-        if (e.keyCode == 107) { //plus key
+        if (e.keyCode == 107 || e.keyCode == 187) { //plus key
             doit();
         }
         if (e.keyCode == 27) {
